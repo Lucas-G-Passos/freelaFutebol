@@ -1,0 +1,108 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/*PC*/
+@media only screen and (min-width: 480px) {
+    #root {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 1fr 3.5fr 1fr;
+    }
+
+    #login-form {
+        grid-column: 2;
+        grid-row: 2;
+    }
+}
+
+
+/*Celular*/
+@media only screen and (max-width: 480px) {
+    #root {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: 0.7fr 1.5fr 0.7fr;
+    }
+    #login-form {
+        grid-column: 2;
+        grid-row: 2;
+    }
+}
+
+#root {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+
+}
+
+#login-form {
+    background-color: white;
+    border-radius: 22px;
+    min-width: 340px;
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#form {
+    width: 90%;
+    height: 90%;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    /* Align items at the top */
+    align-items: center;
+    /* Keep them centered horizontally */
+    gap: 10px;
+    /* Add a small gap between elements, you can adjust this value */
+}
+
+.botao {
+    width: 80%;
+    padding: 1.2vh 1.2vw; /* Vertical padding vh, horizontal vw */
+    font-size: 18px; /* Maintain px for readability */
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    border: none;
+    border-radius: 1.5vh; /* Relative to viewport height */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.2); /* Shadow in vh */
+    margin-top: 1vh; /* Vertical spacing */
+}
+
+.botao:hover {
+    background: linear-gradient(135deg, #ff6a49, #fea64b);
+    transform: scale(1.05);
+    box-shadow: 0 0.75vh 1.5vh rgba(0, 0, 0, 0.3);
+}
+
+.botao:active {
+    transform: scale(0.95);
+    box-shadow: 0 0.25vh 0.5vh rgba(0, 0, 0, 0.2);
+}
+
+.input {
+    padding: 1.5vh 1.5vw; /* Balanced padding */
+    border: 0.1vh solid #ddd; /* Thin border */
+    border-radius: 0.75vh; /* Consistent rounding */
+    font-size: 16px; /* Maintain px for text clarity */
+    transition: all 0.3s ease;
+    outline: none;
+    margin-bottom: 1vh; /* Vertical spacing */
+}
+
+.input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2vh rgba(74, 144, 226, 0.2);
+}
+
+.input::placeholder {
+    color: #aaa;
+}
