@@ -1,4 +1,4 @@
-import db from '../db';
+import db from '../db.js';
 
 async function getAlunoByNome(nome){
     try {
@@ -23,7 +23,7 @@ async function getAlunoByMatricula(matricula){
 async function getAlunoByPagamento(pagamento){
     try {
         const [row] = await db.query('SELECT * FROM alunos WHERE situacao_pagamento = ?',[pagamento]);
-        return row[0] || null
+        return row || null
     } catch (error) {
         console.error('DB error on query:',error);
         throw error;
@@ -53,7 +53,7 @@ async function getAlunoByRG(rg){
 async function getAlunoByData_Matricula(DMat){
     try {
         const [row] = await db.query('SELECT * FROM alunos WHERE data_matricula = ?',[DMat]);
-        return row[0] || null
+        return row || null
     } catch (error) {
         console.error('DB error on query:',error);
         throw error;
@@ -63,7 +63,7 @@ async function getAlunoByData_Matricula(DMat){
 async function getAlunoByTurma(TID){
     try {
         const [row] = await db.query('SELECT * FROM alunos WHERE turma_id = ?',[TID]);
-        return row[0] || null
+        return row || null
     } catch (error) {
         console.error('DB error on query:',error);
         throw error;

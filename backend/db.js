@@ -1,11 +1,12 @@
 import mysql from 'mysql2/promise';
-import 'dotenv/config'
+// import { configDotenv } from 'dotenv';
+// configDotenv();
 
 const db = mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DB,
+    host: 'localhost',
+    user: 'root',
+    password: 'pass',
+    database: 'escolaFut2',
     waitForConnections: true,
     connectionLimit: 15,
     queueLimit: 0,
