@@ -1,0 +1,153 @@
+CREATE DATABASE escolaFut2;
+USE escolaFut2;
+
+-- 1. Create Filial first (no dependencies)
+CREATE TABLE Filial (
+    idFilial INT PRIMARY KEY AUTO_INCREMENT,
+    rua VARCHAR(100) NOT NULL,
+    cidade VARCHAR(50) NOT NULL,
+    estado CHAR(2) NOT NULL,
+    numero INT NOT NULL,
+    cep CHAR(8) NOT NULL
+);
+
+-- 2. Create Turmas (depends on Filial)
+CREATE TABLE turmas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL,
+    dias_horarios TEXT NOT NULL,
+    idFilial INT NOT NULL,
+    FOREIGN KEY (idFilial) REFERENCES Filial(idFilial)
+);
+
+-- 3. Create Alunos (referenced by multiple tables)
+CREATE TABLE alunos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_completo VARCHAR(255) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    data_matricula DATE NOT NULL,
+    numero_matricula VARCHAR(50) UNIQUE NOT NULL,
+    endereco TEXT NOT NULL,
+    telefone1 VARCHAR(20),
+    telefone2 VARCHAR(20),
+    foto VARCHAR(255),
+    turma_id INT,
+    rg VARCHAR(20) UNIQUE NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    convenio VARCHAR(255),
+    alergia VARCHAR(255),
+    uso_medicamento VARCHAR(255),
+    atestado_medico ENUM('S', 'N') NOT NULL,
+    colegio_ano_periodo VARCHAR(255),
+    time_coracao VARCHAR(100),
+    valor_matricula DECIMAL(10,2),
+    valor_mensalidade DECIMAL(10,2),
+    valor_uniforme DECIMAL(10,2),
+    total DECIMAL(10,2),
+    situacao_pagamento ENUM('Pago', 'Em atraso'),
+    kits_id INT,
+    indicacao TEXT,
+    observacoes TEXT,
+    FOREIGN KEY (turma_id) REFERENCES turmas(id)
+);
+
+-- 4. Create Kits (depends on Alunos)
+CREATE TABLE kits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    gol VARCHAR(50),
+    linha VARCHAR(50),
+    tamanho VARCHAR(10),
+    retirado ENUM('S', 'N') NOT NULL,
+    data_retirada DATE,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+);
+
+-- 5. Update Alunos to add Kits foreign key
+ALTER TABLE alunos
+ADD FOREIGN KEY (kits_id) REFERENCES kits(id);
+
+-- 6. Create remaining tables
+CREATE TABLE responsaveis (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    rg VARCHAR(40) UNIQUE NOT NULL,
+    cpf VARCHAR(40) UNIQUE NOT NULL,
+    grau_parentesco VARCHAR(100) NOT NULL,
+    responsavel_pagador ENUM('S', 'N') NOT NULL,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+);
+
+CREATE TABLE pagamentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    tipo ENUM('Matrícula', 'Mensalidade', 'Uniforme') NOT NULL,
+    data_pagamento DATE,
+    status ENUM('Pago', 'Em atraso') NOT NULL,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+);
+
+CREATE TABLE funcionarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_completo VARCHAR(255) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    endereco TEXT NOT NULL,
+    telefone1 VARCHAR(20),
+    telefone2 VARCHAR(20),
+    cargo VARCHAR(100) NOT NULL,
+    rg VARCHAR(20) UNIQUE NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    data_admissao DATE NOT NULL,
+    foto VARCHAR(255),
+    jornada_escala VARCHAR(100),
+    idFilial INT,
+    situacao ENUM('ativo', 'inativo') NOT NULL,
+    FOREIGN KEY (idFilial) REFERENCES Filial(idFilial)
+);
+
+-- Inserindo filiais
+INSERT INTO Filial (rua, cidade, estado, numero, cep) VALUES
+('Rua A', 'São Paulo', 'SP', 100, '01001000'),
+('Rua B', 'Rio de Janeiro', 'RJ', 200, '20040001');
+
+-- Inserindo turmas
+INSERT INTO turmas (descricao, dias_horarios, idFilial) VALUES
+('Turma A', 'Segunda e Quarta - 14h às 16h', 1),
+('Turma B', 'Terça e Quinta - 10h às 12h', 2);
+
+-- Inserindo alunos
+INSERT INTO alunos (nome_completo, data_nascimento, data_matricula, numero_matricula, endereco, telefone1, telefone2, foto, turma_id, rg, cpf, convenio, alergia, uso_medicamento, atestado_medico, colegio_ano_periodo, time_coracao, valor_matricula, valor_mensalidade, valor_uniforme, total, situacao_pagamento, indicacao, observacoes) 
+VALUES 
+('Carlos Silva', '2010-05-10', '2024-01-10', 'MAT007', 'Rua X, 123', '11999999999', '11888888888', NULL, 1, '2342', '123.456.789-00', 'Plano A', 'Nenhuma', 'Nenhum', 'S', '6º Ano - Manhã', 'Palmeiras', 500.00, 300.00, 100.00, 900.00, 'Pago', 'Indicação de amigo', 'Nenhuma'),
+('Ana Souza', '2011-07-20', '2024-02-15', 'MAT009', 'Rua Y, 456', '21999999999', '21888888888', NULL, 2, '53453535', '987.654.321-00', 'Plano B', 'Pólen', 'Antialérgico', 'N', '5º Ano - Tarde', 'Flamengo', 500.00, 300.00, 100.00, 900.00, 'Em atraso', 'Internet', 'Aluna com grande potencial');
+
+-- Inserindo kits
+INSERT INTO kits (aluno_id, gol, linha, tamanho, retirado, data_retirada) VALUES
+(1, 'Camisa Verde', 'Short Branco', 'M', 'S', '2024-03-01'),
+(2, 'Camisa Azul', 'Short Preto', 'P', 'N', NULL);
+
+-- Atualizando alunos para referenciar os kits
+UPDATE alunos SET kits_id = 1 WHERE id = 1;
+UPDATE alunos SET kits_id = 2 WHERE id = 2;
+
+-- Inserindo responsáveis
+INSERT INTO responsaveis (aluno_id, nome, rg, cpf, grau_parentesco, responsavel_pagador) VALUES
+(1, 'João Silva', '11223344', '111.222.333-44', 'Pai', 'S'),
+(2, 'Maria Souza', '22334455', '222.333.444-55', 'Mãe', 'S');
+
+-- Inserindo pagamentos
+INSERT INTO pagamentos (aluno_id, valor, tipo, data_pagamento, status) VALUES
+(1, 500.00, 'Matrícula', '2024-01-10', 'Pago'),
+(1, 300.00, 'Mensalidade', '2024-02-10', 'Pago'),
+(2, 500.00, 'Matrícula', '2024-02-15', 'Pago'),
+(2, 300.00, 'Mensalidade', NULL, 'Em atraso');
+
+-- Inserindo funcionários
+INSERT INTO funcionarios (nome_completo, data_nascimento, endereco, telefone1, telefone2, cargo, rg, cpf, data_admissao, foto, jornada_escala, idFilial, situacao) VALUES
+('Carlos Oliveira', '1985-03-15', 'Rua C, 789', '31999999999', '31888888888', 'Professor', '44556677', '444.555.666-77', '2023-06-01', NULL, '44h semanais', 1, 'ativo'),
+('Fernanda Lima', '1990-08-22', 'Rua D, 321', '41999999999', '41888888888', 'Coordenadora', '55667788', '555.666.777-88', '2022-09-15', NULL, '40h semanais', 2, 'ativo');
+
+
+select * from alunos
