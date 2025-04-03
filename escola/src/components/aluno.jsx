@@ -3,7 +3,7 @@ import './css/aluno.css';
 import { useState } from "react";
 
 const Aluno = () => {
-    const [searchType, setSearchType] = useState("cpf");
+    const [searchField, setSearchField] = useState("cpf");
     const [searchValue, setSearchValue] = useState("");
     const [results, setResults] = useState([]);
 
@@ -14,21 +14,21 @@ const Aluno = () => {
             const response = await fetch("http://localhost:5000/api/alunoCheck", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ type: searchType, value: searchValue })
+                body: JSON.stringify({ field: searchField, value: searchValue })
             });
-
             const data = await response.json();
-            setResults(Array.isArray(data) ? data : [data]); // Ensure it's always an array for mapping
+            setResults(Array.isArray(data) ? data : [data]);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
-    return (
+    return (  // Added missing return statement
         <div>
-            <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+            <h1>OLAa</h1>
+            <select value={searchField} onChange={(e) => setSearchField(e.target.value)}>
                 <option value="cpf">CPF</option>
-                <option value="nome">Nome</option>
+                <option value="nome_completo">Nome</option>
                 <option value="matricula">Matrícula</option>
                 <option value="turma">Turma</option>
                 <option value="pagamento">Situação de Pagamento</option>
