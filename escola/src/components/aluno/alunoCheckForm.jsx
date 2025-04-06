@@ -2,8 +2,9 @@ import React from "react";
 import './css/aluno.css';
 import { useState } from "react";
 
-const Aluno = () => {
-    const [searchField, setSearchField] = useState("cpf");
+
+export default function AlunoCheckForm (){
+    const [searchField, setSearchField] = useState("nome");
     const [searchValue, setSearchValue] = useState("");
     const [results, setResults] = useState([]);
 
@@ -11,19 +12,20 @@ const Aluno = () => {
         if (!searchValue) return alert("Please enter a value");
 
         try {
-            const response = await fetch("http://localhost:5000/api/alunoCheck", {
+            const response = await fetch("http://localhost:5000/api/aluno/check", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ field: searchField, value: searchValue })
             });
             const data = await response.json();
+            console.log(data)
             setResults(Array.isArray(data) ? data : [data]);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
-    return (  // Added missing return statement
+    return(
         <div>
             <h1>OLAa</h1>
             <select value={searchField} onChange={(e) => setSearchField(e.target.value)}>
@@ -51,7 +53,7 @@ const Aluno = () => {
                     <ul>
                         {results.map((aluno, index) => (
                             <li key={index}>
-                                {aluno.nome} - CPF: {aluno.cpf} - Turma: {aluno.turma_id}
+                                {aluno.nome_completo} - CPF: {aluno.cpf} - Turma: {aluno.id_turma}
                             </li>
                         ))}
                     </ul>
@@ -59,8 +61,19 @@ const Aluno = () => {
                     <p>Nenhum aluno encontrado</p>
                 )}
             </div>
+
+
+
+            <br></br><br></br>
+
+            <div>
+                <form>
+                    <input type="text" required placeholder="nome completo"></input><br></br>
+                    <input type="text" required placeholder="colegio"></input><br></br>
+                    <input type="radio" required v></input>
+                </form>
+            </div>
         </div>
     );
 };
 
-export default Aluno;

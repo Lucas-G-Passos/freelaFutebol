@@ -1,6 +1,4 @@
 import mysql from 'mysql2/promise';
-// import { configDotenv } from 'dotenv';
-// configDotenv();
 
 const db = mysql.createPool({
     host: 'localhost',
