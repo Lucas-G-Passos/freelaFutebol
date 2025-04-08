@@ -1,13 +1,16 @@
 import mysql from 'mysql2/promise';
+import { configDotenv } from 'dotenv';
+configDotenv();
 
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'pass',
-    database: 'fut3',
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DB,
     waitForConnections: true,
     connectionLimit: 15,
     queueLimit: 0,
 });
+
 
 export default db;
