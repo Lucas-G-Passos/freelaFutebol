@@ -1,45 +1,83 @@
+
+/* Global reset and typography */
 * {
     box-sizing: border-box;
-    padding: 0;
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
+    font-family: 'National Park','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-@media only screen and (max-width: 480px) {}
-
-#root {
-    width: 100vw;
-    height: 100vh;
-    display: grid;
-    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
-    grid-template-columns: .05fr 1fr;
-    grid-template-rows: 1fr;
-}
-
+/* Sidebar container */
 #navbar {
-    height: 100vh; /* Full height of the viewport */
-    padding-top: 0.5vh;
-    padding-bottom: 0.5vh;
-    grid-column: 1;
-    border-right: solid 3px #aaa;
-    display: grid;
-    grid-template-columns: 1fr; /* Single column */
-    grid-template-rows: repeat(15, 1fr); /* Distribute space evenly */
-    min-width: 70px;
-    overflow: hidden; /* Prevents any content from overflowing */
-}
+    min-width: 100px;
+    width: 7vw;
+    height: 100vh;
+    background-color: var(--surface-a0);
 
-
-#nav-logo {
-    justify-self: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
+    padding: 0.5vw;
+    border-right: 1px solid var(--surface-a50);
 }
 
+/* Top navigation button group */
+#top-button-cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+    width: 100%;
+}
 
-.nav-main-button {
-    background-color: white;
-    margin-top: 2em;
-    margin-bottom: 2em;
-    width: 90%;
-    height: 100%;
+/* Navigation link wrapper */
+.navlink {
+    width: 100%;
+    margin: 0.5vh 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Navigation button style */
+.navbutton {
+    width: 100%;
+    max-width: 80px;
+    min-width: 75px;
+    height: 70px;
+
+    background-color: var(--surface-a20);
+    color: var(--light-a0);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: .8em;
+}
+
+.navbutton:hover {
+    color: var(--primary-a20);
+}
+
+.active{
+    color: var(--primary-a20);
+    transition: color 0.2s ease;
+}
+.active:hover{
+    color: var(--light-a0);
+}
+
+/* Bottom logout button */
+#bottom-button-cont {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 1vh;
 }

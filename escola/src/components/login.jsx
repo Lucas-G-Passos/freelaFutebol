@@ -33,7 +33,7 @@ export default function Login() {
     }
 
     return (
-        <div id='root'>
+        <div id='rootLogin'>
             <div id='login-form'>
                 <form id='form' onSubmit={login}>
                     <input type='text' name='username' placeholder='Username' className='input' required />

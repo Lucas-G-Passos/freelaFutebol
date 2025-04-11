@@ -1,5 +1,4 @@
 import React from "react";
-import './css/aluno.css';
 import { useState } from "react";
 
 
@@ -27,7 +26,6 @@ export default function AlunoCheckForm (){
 
     return(
         <div>
-            <h1>OLAa</h1>
             <select value={searchField} onChange={(e) => setSearchField(e.target.value)}>
                 <option value="cpf">CPF</option>
                 <option value="nome_completo">Nome</option>
@@ -60,18 +58,6 @@ export default function AlunoCheckForm (){
                 ) : (
                     <p>Nenhum aluno encontrado</p>
                 )}
-            </div>
-
-
-
-            <br></br><br></br>
-
-            <div>
-                <form>
-                    <input type="text" required placeholder="nome completo"></input><br></br>
-                    <input type="text" required placeholder="colegio"></input><br></br>
-                    <input type="radio" required v></input>
-                </form>
             </div>
         </div>
     );

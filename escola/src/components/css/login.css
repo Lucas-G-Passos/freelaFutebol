@@ -7,7 +7,7 @@
 
 /*PC*/
 @media only screen and (min-width: 480px) {
-    #root {
+    #rootLogin {
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: 1fr 3.5fr 1fr;
     }
@@ -21,7 +21,7 @@
 
 /*Celular*/
 @media only screen and (max-width: 480px) {
-    #root {
+    #rootLogin {
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: 0.7fr 1.5fr 0.7fr;
     }
@@ -31,12 +31,11 @@
     }
 }
 
-#root {
+#rootLogin {
     width: 100vw;
     height: 100vh;
     display: grid;
     background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
-
 }
 
 #login-form {

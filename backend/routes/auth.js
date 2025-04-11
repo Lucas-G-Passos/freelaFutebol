@@ -4,23 +4,21 @@ import jwt from "jsonwebtoken";
 import db from "../db.js";
 import dotenv from "dotenv";
 import bcrypt from 'bcrypt';
+import verifyJWT from "../JWT.js";
 
 dotenv.config();
 
-const router = express.Router();
+const routerLogin = express.Router();
 const SECRET = process.env.SECRET;
 
 
-const authLogin = router.post("/login", async (req, res) => {
+routerLogin.post("/login", async (req, res) => {
     const { username, password } = req.body;
-    console.log(username, ' ', password)
+
     try {
-        console.log("Username recebido:", username);
 
 
         const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
-        console.log("Buscando usuário:", username);
-        console.log("Resultado da query:", rows);
 
         if (rows.length === 0) {
             return res.status(401).json({ message: "Usuário não encontrado" });
@@ -43,4 +41,8 @@ const authLogin = router.post("/login", async (req, res) => {
     }
 });
 
-export default authLogin;
+routerLogin.get('/verify', verifyJWT, (req, res) => {
+    res.status(200).json({ valid: true, userId: req.userId });
+  });
+
+export default routerLogin;

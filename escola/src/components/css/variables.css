@@ -1,0 +1,29 @@
+:root {
+    /** Base colors */
+    --dark-a0: #000000;
+    --light-a0: #ffffff;
+
+    /** Theme primary colors */
+    --primary-a0: #ab0cf0;
+    --primary-a10: #b73ef3;
+    --primary-a20: #c35bf5;
+    --primary-a30: #ce75f7;
+    --primary-a40: #d88df9;
+    --primary-a50: #e1a4fb;
+
+    /** Theme surface colors */
+    --surface-a0: #000000;
+    --surface-a10: #1e1e1e;
+    --surface-a20: #353535;
+    --surface-a30: #4e4e4e;
+    --surface-a40: #696969;
+    --surface-a50: #858585;
+
+    /** Theme tonal surface colors */
+    --surface-tonal-a0: #180b1b;
+    --surface-tonal-a10: #2c2330;
+    --surface-tonal-a20: #433a46;
+    --surface-tonal-a30: #5b535e;
+    --surface-tonal-a40: #746d77;
+    --surface-tonal-a50: #8e8890;
+}
