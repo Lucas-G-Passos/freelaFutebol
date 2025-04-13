@@ -1,14 +1,14 @@
-
 /* Global reset and typography */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'National Park','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins',sans-serif;
 }
 
 /* Sidebar container */
 #navbar {
+    font-family: cursive;
     min-width: 100px;
     width: 7vw;
     height: 100vh;
@@ -20,6 +20,7 @@
     align-items: center;
     padding: 0.5vw;
     border-right: 1px solid var(--surface-a50);
+    font-weight: 500;
 }
 
 /* Top navigation button group */
@@ -48,28 +49,36 @@
     min-width: 75px;
     height: 70px;
 
+    padding-right: 5px;
+    padding-left: 5px;
+    box-shadow: none;
     background-color: var(--surface-a20);
     color: var(--light-a0);
     border-radius: 10px;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: box-shadow 0.2s ease, color 0.2s ease;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
     font-size: .8em;
 }
 
 .navbutton:hover {
     color: var(--primary-a20);
+    box-shadow: 0px 0px 20px 1px var(--primary-a50);
+    -webkit-box-shadow: 0px 0px 20px 1px var(--primary-a50);
+    -moz-box-shadow: 0px 0px 20px 1px var(--primary-a50);
 }
 
-.active{
+.active {
     color: var(--primary-a20);
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, box-shadow 0.2s ease;
 }
-.active:hover{
+
+.active:hover {
     color: var(--light-a0);
 }
 

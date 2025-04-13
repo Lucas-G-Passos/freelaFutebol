@@ -10,6 +10,8 @@ const db = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 15,
     queueLimit: 0,
+    charset: 'utf8mb4_unicode_ci', // Combined charset and collation
+    timezone: 'local',
 });
 
 

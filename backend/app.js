@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cors());
 
 
-app.use('/api',verifyJWT,router);
+app.use('/api',router);
 app.use('/auth', routerLogin);
 
 

@@ -16,7 +16,7 @@ export default function Navbar() {
             <div id='navbar'>
                 <div id='top-button-cont'>
                     <NavLink to={'/dashboard'} className='navlink'>
-                        <div className='navbutton active'>
+                        <div className='navbutton'>
                             <DashboardIcon />
                             Dashboard
                         </div>
@@ -33,6 +33,16 @@ export default function Navbar() {
                             Funcionario
                         </div>
                     </NavLink>
+                    <NavLink to={'/turmas'} className='navlink'>
+                        <div className='navbutton'>
+                            Turmas
+                        </div>
+                    </NavLink>
+                    <NavLink to={'/filiais'} className='navlink'>
+                        <div className='navbutton'>
+                            Filiais
+                        </div>
+                    </NavLink>
                 </div>
 
                 <div id='bottom-button-cont'>
@@ -41,14 +51,14 @@ export default function Navbar() {
                         localStorage.removeItem('token');
                         navigate('/');
                     }}>
-                        <div className ='navbutton'>
+                        <div className='navbutton'>
                             <LogoutIcon />
                             Logout
                         </div>
                     </a>
                 </div>
             </div>
-            <div style={{ flexGrow: 1, padding: '1rem', backgroundColor:'var(--surface-a0)'}}>
+            <div style={{ flexGrow: 1, backgroundColor: 'var(--surface-a0)' }}>
                 <Outlet />
             </div>
         </div>

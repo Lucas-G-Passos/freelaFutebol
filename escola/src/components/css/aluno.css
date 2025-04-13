@@ -1,0 +1,135 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+#alunoRoot {
+    --dot-bg: var(--surface-a0);
+    --dot-color: var(--primary-a40);
+    --dot-size: 2px;
+    --dot-space: 50px;
+    background:
+        linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+        linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+        var(--dot-color);
+    color: var(--light-a0);
+
+    display: grid;
+    height: 100vh;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 5px;
+    box-sizing: border-box;
+}
+
+#inputField {
+    grid-column: 2/8;
+    grid-row: 2;
+
+    background-color: var(--surface-a0);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+    justify-content: center;
+    align-items: center;
+}
+#inputField *{ font-family: 'Space Grotesk', sans-serif;}
+.input-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 12vh;
+    grid-column: 1/8;
+}
+
+#inputField input {
+    width: 80%;
+    height: 70%;
+    justify-self: flex-end;
+    align-self: center;
+
+    grid-column: 1/4;
+
+    background-color: var(--surface-a20);
+    border: none;
+    box-shadow: none;
+    padding: 10px;
+    color: var(--light-a0);
+    font-size: 4em;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    
+}
+
+#inputField button {
+    grid-column: 4;
+    align-self: center;
+    width: 20%;
+    height: 70%;
+    font-size: 4em;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border: none;
+    box-shadow: none;
+    transition: color 0.1s ease-in-out, background-color 0.1s ease-in-out;
+}
+#inputField button:active{
+    color: var(--primary-a30);
+    background-color: var(--surface-a20);
+}
+#inputField button:focus{
+    color: var(--primary-a30);
+    background-color: var(--surface-a20);
+}
+
+#filterOptions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+#filterOptions select{
+    width: 100%;
+    height: 70%;
+    border: none;
+    box-shadow: none;
+    appearance: none;
+    line-height: 1;
+    border-right: 1px solid var(--surface-a0);
+    font-size: 3.5em;
+    transition: color 0.1s ease-in-out, background-color 0.1s ease-in-out;
+}
+#inputField select:active{
+    color: var(--primary-a30);
+    background-color: var(--surface-a20);
+}
+#results {
+    background-color: var(--surface-a0);
+    grid-column: 2/8;
+    grid-row: 6;
+}
+
+.turma-select {
+    width: 80%;
+    height: 70%;
+    background-color: var(--surface-a20);
+    border: none;
+    color: var(--light-a0);
+    font-size: 3em;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    padding: 10px;
+    appearance: none;
+}
+.turma-select:active,
+.turma-select:focus {
+    color: var(--primary-a30);
+    background-color: var(--surface-a20);
+}
+
