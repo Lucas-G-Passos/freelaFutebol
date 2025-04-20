@@ -4,6 +4,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 export default function Navbar() {
 
@@ -35,11 +37,13 @@ export default function Navbar() {
                     </NavLink>
                     <NavLink to={'/turmas'} className='navlink'>
                         <div className='navbutton'>
+                            <GroupsIcon />
                             Turmas
                         </div>
                     </NavLink>
                     <NavLink to={'/filiais'} className='navlink'>
                         <div className='navbutton'>
+                            <ApartmentIcon />
                             Filiais
                         </div>
                     </NavLink>

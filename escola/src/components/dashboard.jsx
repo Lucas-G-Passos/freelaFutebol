@@ -51,9 +51,9 @@ export default function Dashboard() {
                     percent: Math.round(Number((inadData.total / totalData.total) * 100))
                 });
 
-
-
-
+                console.log(stats.inad);
+                console.log(stats.total);
+                console.log(stats.percent)
 
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);

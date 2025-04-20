@@ -1,129 +1,135 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
 }
 
-
 #rootDashboard {
-    --dot-bg: var(--surface-a0);
-    --dot-color: var(--primary-a40);
-    --dot-size: 2px;
-    --dot-space: 50px;
-    background:
-        linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-        linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-        var(--dot-color);
-    color: var(--light-a0);
+  --dot-bg: var(--surface-a0);
+  --dot-color: var(--primary-a40);
+  --dot-size: 2px;
+  --dot-space: 50px;
+  background: linear-gradient(
+        90deg,
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    linear-gradient(
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    var(--dot-color);
+  color: var(--light-a0);
 
-    display: grid;
-    height: 100vh;
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(8, 1fr);
-    gap: 5px;
-    box-sizing: border-box;
+  display: grid;
+  height: 100vh;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 5px;
+  box-sizing: border-box;
 }
 
 #title {
-    display: flex;
+  display: flex;
 
-    width: 90%;
-    background-color: var(--surface-a0);
+  width: 90%;
+  background-color: var(--surface-a0);
 
-    align-self: center;
-    align-items: center;
-    justify-content: center;
-    justify-self: center;
-    color: var(--primary-a50);
-    grid-row: 1/2;
-    grid-column: 4/6;
-    font-family: 'Poppins';
-
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  color: var(--primary-a50);
+  grid-row: 1/2;
+  grid-column: 4/6;
+  font-family: "Poppins";
 }
 
 #title * {
-    font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
 }
 
 #widget * {
-    font-family: 'Space Grotesk', sans-serif;
+  font-family: "Space Grotesk", sans-serif;
 }
 
 #widget {
-    margin: 60px;
-    background-color: var(--surface-a10);
-    border-radius: 20px;
+  margin: 60px;
+  background-color: var(--surface-a10);
+  border-radius: 20px;
 
-    padding: 15px;
+  padding: 15px;
 
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
 
-    width: 45vw;
-    height: 30vh;
-    flex-direction: column;
-    grid-row: 3/6;
-    grid-column: 4/6;
-    gap: 10px;
+  width: 45vw;
+  height: 30vh;
+  flex-direction: column;
+  grid-row: 3/6;
+  grid-column: 4/6;
+  gap: 10px;
 }
 
 #alunoValores h3 {
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 
 #barTotal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--primary-a40);
-    grid-row: 3;
-    grid-column: 2/5;
-    border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-a40);
+  grid-row: 3;
+  grid-column: 2/5;
+  border-radius: 15px;
 }
 
 #barInad {
-    --percent: 50;
-    grid-row: 3;
-    grid-column: 2/5;
-    background-color: rgb(204, 95, 45);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: var(--percent);
-    border-radius: 10px;
+  --percent: 50;
+  grid-row: 3;
+  grid-column: 2/5;
+  background-color: rgb(204, 95, 45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--percent);
+  border-radius: 10px;
 }
 
 #widgetTextCont {
-    grid-row: 5;
-    grid-column: 1/6;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    font-size: 1em;
+  grid-row: 5;
+  grid-column: 1/6;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-size: 1em;
 }
 
 .legend {
-    grid-row: 5;
-    grid-column: 1/6;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
+  grid-row: 5;
+  grid-column: 1/6;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .legendaSpanTotal {
-    color: var(--primary-a50);
-    padding-right: 5px;
+  color: var(--primary-a50);
+  padding-right: 5px;
 }
 
 .legendaSpanInad {
-    color: rgb(204, 95, 45);
-    padding-right: 5px;
+  color: rgb(204, 95, 45);
+  padding-right: 5px;
 }
 
 #title img {
-    height: 8vh;
+  height: 8vh;
 }

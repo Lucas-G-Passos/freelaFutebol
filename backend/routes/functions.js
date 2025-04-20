@@ -1,6 +1,74 @@
-import db from '../db.js';
+import db from "../db.js";
 
-// Retorna todos os alunos
+async function getAlunoDetalhadoQuery(situacao = null) {
+  let filtroPagamento = "";
+
+  if (situacao === "adimplente") {
+    filtroPagamento = `
+      AND (p.status = 'pago' OR p.data_vencimento >= CURDATE())
+    `;
+  } else if (situacao === "inadimplente") {
+    filtroPagamento = `
+      AND p.data_vencimento < CURDATE()
+      AND p.status != 'pago'
+    `;
+  }
+
+  const [rows] = await db.query(`
+    SELECT 
+    a.id AS aluno_id,
+    a.nome_completo,
+    a.data_nascimento,
+    a.data_matricula,
+    a.telefone1,
+    a.telefone2,
+    a.foto,
+    a.rg,
+    a.cpf,
+    a.convenio,
+    a.alergia,
+    a.uso_medicamento,
+    a.medicamento_horario,
+    a.atestado_medico,
+    a.colegio,
+    a.colegio_ano,
+    a.time_coracao,
+    a.indicacao,
+    a.observacao,
+    a.ativo,
+    t.nome AS nome_turma,
+    r.id AS responsavel_id,
+    COALESCE(r.nome, 'Sem responsável') AS nome_responsavel,
+    e.id AS endereco_id,
+    e.cep,
+    e.cidade,
+    e.estado,
+    e.numero,
+    e.rua,
+    ${
+      situacao
+        ? `'${situacao.charAt(0).toUpperCase() + situacao.slice(1)}'`
+        : "NULL"
+    } AS situacao_pagamento
+  FROM alunos a
+  JOIN responsaveis r ON r.id_aluno = a.id
+  JOIN pagamentos p ON p.responsavel_id = r.id
+  LEFT JOIN turmas t ON a.id_turma = t.id
+  JOIN endereco e ON a.id_endereco = e.id
+  WHERE a.ativo = 'Ativo'
+  ${filtroPagamento}`);
+
+  return rows;
+}
+
+async function getAdimplente() {
+  return await getAlunoDetalhadoQuery("adimplente");
+}
+
+async function getInadimplente() {
+  return await getAlunoDetalhadoQuery("inadimplente");
+}
+
 async function getAlunos() {
   try {
     const [rows] = await db.query(`
@@ -14,16 +82,14 @@ async function getAlunos() {
     `);
     return rows;
   } catch (error) {
-    console.error('db error (alunos):', error);
+    console.error("db error (alunos):", error);
     throw error;
   }
 }
 
-
-// Retorna número total de alunos
 async function getNAlunos() {
   try {
-    const [rows] = await db.query('SELECT COUNT(*) AS total FROM alunos');
+    const [rows] = await db.query("SELECT COUNT(*) AS total FROM alunos");
     return rows[0];
   } catch (error) {
     console.error(error);
@@ -31,206 +97,276 @@ async function getNAlunos() {
   }
 }
 
-// Retorna todos os responsáveis
 async function getResponsaveis() {
   try {
-    const [rows] = await db.query(`SELECT * FROM responsavel`);
+    const [rows] = await db.query(`SELECT * FROM responsaveis`);
     return rows;
   } catch (error) {
-    console.error('db error (responsavel):', error);
+    console.error("db error (responsaveis):", error);
     throw error;
   }
 }
 
-// Retorna todos os pagamentos
 async function getPagamentos() {
   try {
     const [rows] = await db.query(`SELECT * FROM pagamento`);
     return rows;
   } catch (error) {
-    console.error('db error (pagamento):', error);
+    console.error("db error (pagamento):", error);
     throw error;
   }
 }
 
-// Retorna todos os endereços
 async function getEnderecos() {
   try {
     const [rows] = await db.query(`SELECT * FROM endereco`);
     return rows;
   } catch (error) {
-    console.error('db error (endereco):', error);
+    console.error("db error (endereco):", error);
     throw error;
   }
 }
 
-// Retorna todas as turmas
 async function getTurmas() {
   try {
     const [rows] = await db.query(`SELECT * FROM turmas`);
     return rows;
   } catch (error) {
-    console.error('db error (turmas):', error);
+    console.error("db error (turmas):", error);
     throw error;
   }
 }
 
-// Retorna alunos adimplentes (data de vencimento no futuro)
-async function getAdimplente() {
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        a.id AS id_aluno,
-        a.nome_completo AS nome_aluno,
-        a.cpf,
-        r.nome AS nome_responsavel,
-        p.valor_mensalidade,
-        p.data_vencimento
-      FROM alunos a
-      JOIN responsaveis r ON a.id_responsavel = r.id
-      JOIN pagamentos p ON p.responsavel_id = r.id
-      WHERE p.data_vencimento >= CURDATE();
-    `);
-    return rows;
-  } catch (err) {
-    console.error('Erro ao buscar adimplentes:', err);
-    throw err;
-  }
-}
-
-// Retorna alunos inadimplentes
-async function getInadimplente() {
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        a.id AS id_aluno,
-        a.nome_completo AS nome_aluno,
-        a.cpf,
-        r.nome AS nome_responsavel,
-        p.valor_mensalidade,
-        p.data_vencimento
-      FROM alunos a
-      JOIN responsaveis r ON a.id_responsavel = r.id
-      JOIN pagamentos p ON p.responsavel_id = r.id
-      WHERE p.data_vencimento < CURDATE();
-    `);
-    return rows;
-  } catch (err) {
-    console.error('Erro ao buscar inadimplentes:', err);
-    throw err;
-  }
-}
-
-// Retorna o número de inadimplentes
 async function getInadimplenteNum() {
   try {
     const [rows] = await db.query(`
       SELECT COUNT(DISTINCT a.id) AS total
       FROM alunos a
-      JOIN responsaveis r ON a.id_responsavel = r.id
+      JOIN responsaveis r ON r.id_aluno = a.id
       JOIN pagamentos p ON p.responsavel_id = r.id
-      WHERE p.data_vencimento < CURDATE();
+      WHERE p.data_vencimento < CURDATE()
+        AND p.status != 'pago'
+        AND a.ativo = 'Ativo';
     `);
     return rows[0];
   } catch (err) {
-    console.error('Erro ao contar inadimplentes:', err);
+    console.error("Erro ao contar inadimplentes:", err);
     throw err;
   }
 }
 
-
-
-
-
-
-
-
-
-// Updated getByField function with proper encoding and search handling
-async function getByField(table, field, value, orderBy = null, orderDirection = 'ASC') {
+async function getByField(
+  table,
+  field,
+  value,
+  orderBy = null,
+  orderDirection = "ASC"
+) {
   try {
-    let query;
-    let params;
-
-    if (table === 'alunos') {
-      // Main search query with proper collation
-      query = `
+    if (table === "alunos") {
+      let query = `
         SELECT 
-          a.id,
-          a.nome_completo,
-          a.cpf,
-          t.nome AS nome_turma,
-          COALESCE(r.nome, 'Sem responsável') AS nome_responsavel
-        FROM alunos a
-        LEFT JOIN turmas t ON a.id_turma = t.id
-        LEFT JOIN responsaveis r ON a.id_responsavel = r.id
-        WHERE a.nome_completo COLLATE utf8mb4_unicode_ci LIKE ?
-      `;
-      params = [`%${value}%`]; // Partial match with original casing
+  a.id AS aluno_id,
+  a.nome_completo,
+  a.data_nascimento,
+  a.data_matricula,
+  a.telefone1,
+  a.telefone2,
+  a.foto,
+  a.rg,
+  a.cpf,
+  a.convenio,
+  a.alergia,
+  a.uso_medicamento,
+  a.medicamento_horario,
+  a.atestado_medico,
+  a.colegio,
+  a.colegio_ano,
+  a.time_coracao,
+  a.indicacao,
+  a.observacao,
+  a.ativo,
+  t.nome AS nome_turma,
+  r.id AS responsavel_id,
+  (SELECT nome FROM responsaveis r WHERE r.id_aluno = a.id LIMIT 1) AS nome_responsavel,
+  e.id AS endereco_id,
+  e.cep,
+  e.cidade,
+  e.estado,
+  e.numero,
+  e.rua,
+  CASE 
+    WHEN EXISTS (
+      SELECT 1 FROM responsaveis r2
+      JOIN pagamentos p ON p.responsavel_id = r2.id
+      WHERE r2.id_aluno = a.id AND (p.status = 'pago' OR p.data_vencimento >= CURDATE())
+    ) THEN 'Adimplente'
+    ELSE 'Inadimplente'
+  END AS situacao_pagamento
+FROM alunos a
+LEFT JOIN turmas t ON a.id_turma = t.id
+JOIN endereco e ON a.id_endereco = e.id
+JOIN responsaveis r ON r.id_aluno = a.id
+WHERE a.${field} COLLATE utf8mb4_unicode_ci LIKE ?`;
 
-      // Handle numeric fields differently
-      if (['cpf', 'rg', 'matricula'].includes(field)) {
-        query = query.replace('LIKE ?', '= ?');
-        params = [value]; // Exact match for numeric fields
+      let params = [`%${value}%`];
+      if (["cpf", "rg", "matricula"].includes(field)) {
+        query = query.replace("LIKE ?", "= ?");
+        params = [value];
       }
 
-      // Turma search by ID
-      if (field === 'turma') {
+      if (field === "turma") {
         query = `
           SELECT 
-            a.id,
             a.nome_completo,
+            a.data_nascimento,
+            a.data_matricula,
+            a.telefone1,
+            a.telefone2,
+            a.foto,
+            a.rg,
             a.cpf,
+            a.convenio,
+            a.alergia,
+            a.uso_medicamento,
+            a.medicamento_horario,
+            a.atestado_medico,
+            a.colegio,
+            a.colegio_ano,
+            a.time_coracao,
+            a.indicacao,
+            a.observacao,
+            a.ativo,
             t.nome AS nome_turma,
-            COALESCE(r.nome, 'Sem responsável') AS nome_responsavel
+            (SELECT nome FROM responsaveis r WHERE r.id_aluno = a.id LIMIT 1) AS nome_responsavel,
+            e.cep,
+            e.cidade,
+            e.estado,
+            e.numero,
+            e.rua,
+            CASE 
+              WHEN EXISTS (
+                SELECT 1 FROM responsaveis r2
+                JOIN pagamentos p ON p.responsavel_id = r2.id
+                WHERE r2.id_aluno = a.id AND (p.status = 'pago' OR p.data_vencimento >= CURDATE())
+              ) THEN 'Adimplente'
+              ELSE 'Inadimplente'
+            END AS situacao_pagamento
           FROM alunos a
           LEFT JOIN turmas t ON a.id_turma = t.id
-          LEFT JOIN responsaveis r ON a.id_responsavel = r.id
-          WHERE a.id_turma = ?
+          JOIN endereco e ON a.id_endereco = e.id
+          WHERE t.id = ?;
         `;
         params = [value];
       }
+
+      const [rows] = await db.query(query, params);
+      return rows.length > 0 ? rows : null;
     } else {
-      // Generic table handling
-      query = `SELECT * FROM ${table} WHERE ${field} COLLATE utf8mb4_unicode_ci LIKE ?`;
-      params = [`%${value}%`];
+      const query = `SELECT * FROM ${table} WHERE ${field} COLLATE utf8mb4_unicode_ci LIKE ?`;
+      const params = [`%${value}%`];
+      const [rows] = await db.query(query, params);
+      return rows.length > 0 ? rows : null;
     }
-
-    const [rows] = await db.query(query, params);
-    return rows.length > 0 ? rows : null;
-
   } catch (error) {
     console.error(`DB error on query (${field}) in table (${table}):`, error);
     throw error;
   }
 }
 
-
-
 async function insertIntoTable(tableName, data) {
-  // Lista de tabelas permitidas
-  const allowedTables = ['alunos', 'responsavel', 'endereco', 'pagamento', 'turmas'];
+  const allowedTables = [
+    "alunos",
+    "responsaveis",
+    "endereco",
+    "pagamentos",
+    "turmas",
+  ];
 
   if (!allowedTables.includes(tableName)) {
     throw new Error(`Tabela inválida: ${tableName}`);
   }
 
   try {
-    const columns = Object.keys(data).join(', ');
-    const placeholders = Object.keys(data).map(() => '?').join(', ');
-    const values = Object.values(data);
-
-    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders})`;
-
-    const [result] = await db.execute(query, values);
-    return { id: result.insertId, message: `${tableName} inserido com sucesso!` };
+    const sql = `INSERT INTO ${tableName} SET ?`;
+    const [result] = await db.query(sql, data); // Desestruturação aqui
+    return result; // Retorna o objeto de resultado diretamente
   } catch (error) {
     console.error(`Erro ao inserir na tabela ${tableName}:`, error);
     throw error;
   }
 }
 
+async function updateInTable(tableName, data, id) {
+  const allowedTables = [
+    "alunos",
+    "responsaveis",
+    "endereco",
+    "pagamentos",
+    "turmas",
+    "funcionarios",
+  ];
 
+  if (!allowedTables.includes(tableName)) {
+    throw new Error(`Invalid table: ${tableName}`);
+  }
 
+  try {
+    const setClause = Object.keys(data)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    const values = [...Object.values(data), id];
 
-export { getByField, insertIntoTable, getAlunos, getEnderecos, getPagamentos, getResponsaveis, getTurmas, getInadimplente, getAdimplente, getNAlunos, getInadimplenteNum };
+    const query = `UPDATE ${tableName} SET ${setClause} WHERE id = ?`;
+    const [result] = await db.execute(query, values);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error(`Error updating ${tableName}:`, error);
+    throw error;
+  }
+}
+
+async function getCompleteAluno(id) {
+  try {
+    const [aluno] = await db.query(
+      `
+      SELECT 
+        a.*, 
+        e.id AS endereco_id,
+        e.cep,
+        e.cidade,
+        e.estado,
+        e.numero,
+        e.rua,
+        r.id AS responsavel_id,
+        r.nome AS responsavel_nome
+      FROM alunos a
+      LEFT JOIN endereco e ON a.id_endereco = e.id
+      LEFT JOIN responsaveis r ON r.id_aluno = a.id
+      WHERE a.id = ?
+    `,
+      [id]
+    );
+
+    return aluno[0] || null;
+  } catch (error) {
+    console.error("Error fetching complete aluno:", error);
+    throw error;
+  }
+}
+
+export {
+  getCompleteAluno,
+  updateInTable,
+  getByField,
+  insertIntoTable,
+  getAlunos,
+  getEnderecos,
+  getPagamentos,
+  getResponsaveis,
+  getTurmas,
+  getInadimplente,
+  getAdimplente,
+  getNAlunos,
+  getInadimplenteNum,
+};

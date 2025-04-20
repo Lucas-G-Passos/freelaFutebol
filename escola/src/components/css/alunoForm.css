@@ -1,0 +1,154 @@
+/* === ALUNO FORM STYLING === */
+
+#alunoFormRoot {
+  --dot-bg: var(--surface-a0);
+  --dot-color: var(--primary-a40);
+  --dot-size: 2px;
+  --dot-space: 50px;
+  background: linear-gradient(
+        90deg,
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    linear-gradient(
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    var(--dot-color);
+  font-family: "Space Grotesk";
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem; /* Add padding instead of fixed height */
+  height: auto;
+  overflow: auto;
+}
+
+.formRoot {
+  background-color: var(--surface-a10);
+  display: inline-flex; /* Shrink-to-fit width */
+  flex-direction: column;
+  padding: 2rem; /* Extra space around children */
+  margin: 2rem; /* Space from parent boundaries */
+  max-width: 100%; /* Prevent overflow */
+  max-height: none; /* Prevent viewport overflow */
+  overflow: visible; /* Add scroll if content exceeds space */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  color: var(--light-a0);
+  margin: 2rem auto;
+}
+.formSection {
+  display: flex;
+  background-color: var(--surface-a20);
+  margin: 10px;
+  padding: 10px;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  border-radius: 10px;
+  border: 1px solid var(--surface-a30);
+}
+.formSection.alunoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.formColumnContainer {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+}
+
+.formSection label {
+  display: flex;
+  flex-direction: column;
+}
+.formColumn {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.formHeader {
+  margin: 0;
+  padding: 1rem;
+  border-radius: 4px;
+  width: 100%;
+  text-align: center;
+  order: -1;
+}
+.formSection input {
+  background-color: var(--surface-a10);
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: none;
+  border: 1px solid var(--surface-a30);
+  color: var(--light-a0);
+}
+.formSection textarea {
+  background-color: var(--surface-a10);
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: none;
+  border: 1px solid var(--surface-a30);
+  color: var(--light-a0);
+  resize: none;
+}
+.formSection select {
+  appearance: none;
+  background-color: var(--surface-a10);
+  color: var(--light-a0);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--surface-a30);
+}
+.label-text-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.required-asterisk {
+  color: red;
+  font-size: 0.9em;
+  line-height: 1;
+}
+.formFooter {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 20px;
+}
+
+.formFooter button {
+  background: #4caf50;
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.formFooter button:hover {
+  background: #45a049;
+}
+
+.label-text-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.required-asterisk {
+  color: red;
+  font-size: 0.9em;
+  line-height: 1;
+}
