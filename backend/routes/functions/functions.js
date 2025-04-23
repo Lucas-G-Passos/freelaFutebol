@@ -1,4 +1,4 @@
-import db from "../db.js";
+import db from "../../db.js";
 
 async function getAlunoDetalhadoQuery(situacao = null) {
   let filtroPagamento = "";
@@ -167,6 +167,7 @@ async function getByField(
       let query = `
         SELECT 
   a.id AS aluno_id,
+  a.id_turma, -- ✅ Campo adicionado
   a.nome_completo,
   a.data_nascimento,
   a.data_matricula,
@@ -187,14 +188,20 @@ async function getByField(
   a.observacao,
   a.ativo,
   t.nome AS nome_turma,
+  -- Campos de responsáveis
   r.id AS responsavel_id,
-  (SELECT nome FROM responsaveis r WHERE r.id_aluno = a.id LIMIT 1) AS nome_responsavel,
+  r.nome AS responsavel_nome,
+  r.rg AS responsavel_rg,
+  r.cpf AS responsavel_cpf,
+  r.grau_parentesco,
+  -- Campos de endereço
   e.id AS endereco_id,
   e.cep,
   e.cidade,
   e.estado,
   e.numero,
   e.rua,
+  -- Lógica de situação de pagamento
   CASE 
     WHEN EXISTS (
       SELECT 1 FROM responsaveis r2
@@ -204,11 +211,10 @@ async function getByField(
     ELSE 'Inadimplente'
   END AS situacao_pagamento
 FROM alunos a
-LEFT JOIN turmas t ON a.id_turma = t.id
+LEFT JOIN turmas t ON a.id_turma = t.id -- Join com turmas
 JOIN endereco e ON a.id_endereco = e.id
-JOIN responsaveis r ON r.id_aluno = a.id
+LEFT JOIN responsaveis r ON r.id_aluno = a.id
 WHERE a.${field} COLLATE utf8mb4_unicode_ci LIKE ?`;
-
       let params = [`%${value}%`];
       if (["cpf", "rg", "matricula"].includes(field)) {
         query = query.replace("LIKE ?", "= ?");

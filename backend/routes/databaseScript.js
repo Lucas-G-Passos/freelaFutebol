@@ -11,8 +11,10 @@ import {
   getInadimplenteNum,
   getNAlunos,
   updateInTable,
-} from "./functions.js";
+} from "./functions/functions.js";
 import express from "express";
+import multer from "multer";
+import uploadImage from './../imgKit.js'
 const router = express.Router();
 
 router.use(express.json());
@@ -205,7 +207,7 @@ router.post("/insert", validateInsertData, async (req, res) => {
 router.put("/aluno/update", async (req, res) => {
   const { aluno, endereco, responsavel } = req.body;
 
-  if (!aluno?.id || !endereco?.id || !responsavel?.id) {
+  if (!aluno?.id || !endereco?.id) {
     return res.status(400).json({ error: "IDs obrigatórios não fornecidos" });
   }
 
@@ -228,13 +230,8 @@ router.put("/aluno/update", async (req, res) => {
       endereco,
       endereco.id
     );
-    const responsavelSuccess = await updateInTable(
-      "responsaveis",
-      responsavel,
-      responsavel.id
-    );
 
-    if (alunoSuccess && enderecoSuccess && responsavelSuccess) {
+    if (alunoSuccess && enderecoSuccess) {
       res.json({ message: "Dados atualizados com sucesso!" });
     } else {
       res
@@ -247,6 +244,24 @@ router.put("/aluno/update", async (req, res) => {
       error: "Erro interno do servidor",
       details: error.message,
     });
+  }
+});
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
+  
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ error: "Nenhuma imagem enviada" });
+    }
+
+    const fotoUrl = await uploadImage(file); // Usando o serviço que criamos anteriormente
+    res.json({ fotoUrl });
+  } catch (error) {
+    console.error("Erro no upload da imagem:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { buscarTurmas } from "./apiCalls";
+import { buscarTurmas /*handleGeneratePDF*/ } from "./apiCalls";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -15,13 +15,47 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
 
   // Função para encontrar o nome da turma pelo ID
 
+  const ESTADOS = [
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO",
+  ];
+
   useEffect(() => {
     if (aluno) {
       setFormData({
         id: aluno.aluno_id ?? aluno.id ?? null,
         endereco_id: aluno.endereco_id ?? null,
         responsavel_id: aluno.responsavel_id ?? null,
-        id_turma: aluno.id_turma ?? aluno.turma_id ?? null, // Campo corrigido
+        id_turma: aluno.id_turma ?? aluno.turma_id ?? null,
+        data_nascimento: aluno.data_nascimento ?? null,
+        data_matricula: aluno.data_matricula ?? null,
+        nome_responsavel:
+          aluno.responsavel_nome ?? aluno.nome_responsavel ?? null,
         nome_completo: aluno.nome_completo ?? "",
         telefone1: aluno.telefone1 ?? "",
         telefone2: aluno.telefone2 ?? "",
@@ -42,11 +76,13 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
         cidade: aluno.cidade ?? "",
         rua: aluno.rua ?? "",
         cep: aluno.cep ?? "",
-        nome_responsavel: aluno.nome_responsavel ?? "",
+        numero: aluno.numero ?? "", // ✅ NOVO
+        grau_parentesco: aluno.grau_parentesco ?? "", // ✅ NOVO
         situacao_pagamento: aluno.situacao_pagamento ?? "Adimplente",
       });
     }
   }, [aluno]);
+  console.log(formData);
 
   useEffect(() => {
     async function fetchData() {
@@ -55,14 +91,6 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
     }
     fetchData();
   }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   const handleSave = async () => {
     try {
@@ -97,10 +125,6 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
             rua: formData.rua,
             cep: formData.cep,
           },
-          responsavel: {
-            id: formData.responsavel_id,
-            nome: formData.nome_responsavel,
-          },
         }),
       });
 
@@ -117,61 +141,85 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
       alert("Erro ao atualizar dados");
     }
   };
-
-  const handleGeneratePDF = async () => {
+  async function handleGeneratePDF() {
     try {
-      // Prepare the PDF data structure
+      // Monta payload
       const pdfData = {
         aluno: {
           ...formData,
-          data_nascimento: aluno.data_nascimento,
-          data_matricula: aluno.data_matricula,
+          data_nascimento: formData.data_nascimento,
+          data_matricula: formData.data_matricula,
+          id_turma: formData.id_turma,
+          nome_responsavel: formData.nome,
         },
         endereco: {
           estado: formData.estado,
           cidade: formData.cidade,
           rua: formData.rua,
           cep: formData.cep,
+          numero: formData.numero || "N/A",
         },
         responsavel: {
           nome: formData.nome_responsavel,
-        },
-        pagamento: {
-          situacao: formData.situacao_pagamento,
+          cpf: formData.cpf,
+          rg: formData.rg,
+          grau_parentesco: formData.grau_parentesco,
         },
       };
 
-      // Call the backend PDF generation endpoint
-      const response = await fetch("/api/generate-pdf", {
+      const response = await fetch("/api/pdf", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pdfData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate PDF");
+        const err = await response.json();
+        throw new Error(`${response.status}: ${err.details}`);
       }
 
-      // Create blob from response
-      const pdfBlob = await response.blob();
-      const pdfUrl = URL.createObjectURL(pdfBlob);
+      // Recebe PDF como arrayBuffer
+      const buffer = await response.arrayBuffer();
+      const blob = new Blob([buffer], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
 
-      // Create temporary link to trigger download
+      // Dispara download
       const link = document.createElement("a");
-      link.href = pdfUrl;
-      link.download = `ficha-${formData.nome_completo.replace(/\s/g, "_")}.pdf`;
+      link.href = url;
+      link.download = `ficha_${formData.nome_completo.replace(/\s/g, "_")}.pdf`;
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(pdfUrl);
+      link.remove();
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("PDF generation error:", error);
-      alert("Erro ao gerar PDF. Verifique o console para mais detalhes.");
+      console.error("Erro ao gerar PDF:", error);
+      alert(`Erro ao gerar PDF: ${error.message}`);
     }
+  }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleMaskedChange = (e, name, formatter) => {
+    const v = formatter(e.target.value);
+    setFormData((prev) => ({ ...prev, [name]: v }));
+  };
+
+  const maskTel = (v) =>
+    v
+      .replace(/\D/g, "")
+      .slice(0, 11)
+      .replace(/^(\d{2})(\d+)/, "($1) $2")
+      .replace(/(\d)(\d{4})$/, "$1-$2");
+
+  const maskCEP = (v) =>
+    v
+      .replace(/\D/g, "")
+      .slice(0, 8)
+      .replace(/(\d{5})(\d{3})$/, "$1-$2");
+
+  const maskNumero = (v) => v.replace(/\D/g, "").slice(0, 6);
   return (
     <div className="aluno-overlay">
       <div className="aluno-card">
@@ -202,10 +250,13 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                 </button>
               </div>
             )}
-            <button onClick={null} className="pdf-button">
+            <button onClick={handleGeneratePDF} className="pdf-button">
               <PictureAsPdfIcon />
             </button>
-            <button onClick={handleGeneratePDF} className="edit-button">
+            <button
+              onClick={() => setEditor(!isEditing)}
+              className="edit-button"
+            >
               <EditIcon />
             </button>
             <button onClick={onClose} className="close-button">
@@ -252,6 +303,24 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
               </p>
             )}
           </div>
+          <div className="detail-section">
+            <h3>Responsável</h3>
+
+            <>
+              <p>
+                <strong>Nome:</strong> {aluno.responsavel_nome || "N/A"}
+              </p>
+              <p>
+                <strong>RG:</strong> {aluno.responsavel_rg || "N/A"}
+              </p>
+              <p>
+                <strong>CPF:</strong> {aluno.responsavel_cpf || "N/A"}
+              </p>
+              <p>
+                <strong>Parentesco:</strong> {aluno.grau_parentesco || "N/A"}
+              </p>
+            </>
+          </div>
 
           {/* Contact Information */}
           <div className="detail-section">
@@ -261,19 +330,25 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                 <label>
                   Telefone 1:
                   <input
-                    type="text"
                     name="telefone1"
                     value={formData.telefone1}
-                    onChange={handleChange}
+                    required
+                    placeholder="(99) 99999-9999"
+                    maxLength={15}
+                    onChange={(e) =>
+                      handleMaskedChange(e, "telefone1", maskTel)
+                    }
                   />
                 </label>
                 <label>
-                  Telefone 2:
                   <input
-                    type="text"
                     name="telefone2"
                     value={formData.telefone2}
-                    onChange={handleChange}
+                    placeholder="(99) 99999-9999"
+                    maxLength={15}
+                    onChange={(e) =>
+                      handleMaskedChange(e, "telefone2", maskTel)
+                    }
                   />
                 </label>
               </div>
@@ -296,11 +371,21 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
               <div className="editSection">
                 <label>
                   Estado:
-                  <input
+                  <select
                     name="estado"
                     value={formData.estado}
+                    required
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="" disabled>
+                      Selecione
+                    </option>
+                    {ESTADOS.map((uf) => (
+                      <option key={uf} value={uf}>
+                        {uf}
+                      </option>
+                    ))}{" "}
+                  </select>
                 </label>
                 <label>
                   Cidade:
@@ -326,6 +411,18 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                     onChange={handleChange}
                   />
                 </label>
+                <label>
+                  <input
+                    name="numero"
+                    value={formData.numero}
+                    required
+                    placeholder="Ex: 123"
+                    maxLength={6}
+                    onChange={(e) =>
+                      handleMaskedChange(e, "numero", maskNumero)
+                    }
+                  />
+                </label>
               </div>
             ) : (
               <>
@@ -337,6 +434,9 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                 </p>
                 <p>
                   <strong>Rua:</strong> {aluno.rua}
+                </p>
+                <p>
+                  <strong>Número:</strong> {aluno.numero}
                 </p>
                 <p>
                   <strong>CEP:</strong> {aluno.cep}
@@ -476,7 +576,9 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                     value={formData.id_turma || ""}
                     onChange={handleChange}
                   >
-                    <option value="">Selecione uma turma</option>
+                    <option value="" disabled>
+                      Selecione uma turma
+                    </option>
                     {turmas.map((turma) => (
                       <option key={turma.id} value={turma.id}>
                         {turma.nome}
@@ -484,9 +586,6 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                     ))}
                   </select>
                 </label>
-                <p>
-                  <strong>Responsável:</strong> {aluno.nome_responsavel}
-                </p>
                 <label>
                   Indicação:
                   <input
@@ -503,7 +602,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                     onChange={handleChange}
                   />
                 </label>
-                <label>
+                {/* <label>
                   Situação Pagamento:
                   <select
                     name="situacao_pagamento"
@@ -513,7 +612,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                     <option value="Adimplente">Adimplente</option>
                     <option value="Inadimplente">Inadimplente</option>
                   </select>
-                </label>
+                </label> */}
               </div>
             ) : (
               <>
@@ -529,11 +628,11 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
                 <p>
                   <strong>Observações:</strong> {aluno.observacao || "Nenhuma"}
                 </p>
-                <p
+                {/* <p
                   className={`status ${aluno.situacao_pagamento?.toLowerCase()}`}
                 >
                   <strong>Situação:</strong> {aluno.situacao_pagamento}
-                </p>
+                </p> */}
               </>
             )}
           </div>

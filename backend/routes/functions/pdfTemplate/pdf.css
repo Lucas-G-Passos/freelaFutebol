@@ -261,12 +261,22 @@ page[size="A4"] {
 .escudo {
   grid-column: 1/3;
   grid-row: 1/3;
-  width: 100%; /* Take full width of grid cell */
-  height: 100%; /* Take full height of grid cell */
-  object-fit: contain; /* Maintain aspect ratio while fitting within cell */
-  justify-self: center; /* Optional: center horizontally */
-  align-self: center;
+  width: 100%;
+  height: 100%;
+  display: flex; /* Flexbox makes centering easier */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  overflow: hidden; /* Prevent SVG from overflowing */
 }
+
+.escudo svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 .texto {
   margin: 10px;
   grid-row: 19/20;

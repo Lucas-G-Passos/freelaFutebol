@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import router from "./routes/databaseScript.js";
 import verifyJWT from "./JWT.js";
-import routerLogin from "./routes/auth.js";
+import routerLogin from "./routes/functions/auth.js";
+import routerPDF from './routes/pdfGeneratorRoute.js'
 import { configDotenv } from "dotenv";
 configDotenv();
 
@@ -25,7 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api", router);
+app.use("/api", router, routerPDF);
 app.use("/auth", routerLogin);
 
 const PORT = 5000;

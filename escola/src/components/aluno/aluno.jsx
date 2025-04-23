@@ -70,8 +70,11 @@ export default function Aluno() {
           <ul>
             {results.map((aluno, index) => (
               <li key={index} onClick={() => setSelectedAluno(aluno)}>
+                <img src={aluno.foto} className="fotoAluno"/>
+                
                 {aluno.aluno_id} - {aluno.nome_completo} - Turma:{" "}
                 {aluno.nome_turma}
+                {console.log(results[0])}
               </li>
             ))}
           </ul>

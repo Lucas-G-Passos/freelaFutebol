@@ -1,10 +1,9 @@
-
 import express from "express";
 import jwt from "jsonwebtoken";
-import db from "../db.js";
+import db from "../../db.js";
 import dotenv from "dotenv";
 import bcrypt from 'bcrypt';
-import verifyJWT from "../JWT.js";
+import verifyJWT from "../../JWT.js";
 
 dotenv.config();
 

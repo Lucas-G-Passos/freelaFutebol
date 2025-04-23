@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./../css/alunoForm.css";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CheckIcon from '@mui/icons-material/Check';
 
 export default function AlunoForm() {
   const [turmas, setTurmas] = useState([]);
+  const [file, setFile] = useState(null);
+  const [isUploaded, setUploaded] = useState(false);
   const [aluno, setAluno] = useState({
     nome_completo: "",
     data_nascimento: "",
@@ -62,6 +66,43 @@ export default function AlunoForm() {
     fetchTurmas();
   }, []);
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+  const handleUpload = async () => {
+    if (isUploaded == true) return;
+    try {
+      const formData = new FormData();
+      formData.append("foto", file);
+      if (!file) {
+        alert("Selecione um arquivo primeiro!");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        alert("Apenas imagens são permitidas!");
+        return;
+      }
+
+      const response = await fetch("/api/aluno/insertimage", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data)
+      setAluno({ ...aluno, foto: data.fotoUrl });
+      setUploaded(true);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      // Adicione tratamento de erro para o usuário
+      alert("Falha no upload da imagem: " + error.message);
+    }
+  };
   const handleCepChange = (e) => {
     let value = e.target.value
       .replace(/\D/g, "")
@@ -177,6 +218,8 @@ export default function AlunoForm() {
                 <input
                   type="text"
                   required
+                  maxLength={100}
+                  placeholder="Digite o nome completo"
                   value={aluno.nome_completo}
                   onChange={(e) =>
                     setAluno({ ...aluno, nome_completo: e.target.value })
@@ -191,6 +234,7 @@ export default function AlunoForm() {
                 <input
                   type="date"
                   required
+                  max={new Date().toISOString().split("T")[0]}
                   value={aluno.data_nascimento}
                   onChange={(e) =>
                     setAluno({ ...aluno, data_nascimento: e.target.value })
@@ -205,6 +249,7 @@ export default function AlunoForm() {
                 <input
                   type="date"
                   required
+                  min={new Date().toISOString().split("T")[0]}
                   value={aluno.data_matricula}
                   onChange={(e) =>
                     setAluno({ ...aluno, data_matricula: e.target.value })
@@ -217,23 +262,31 @@ export default function AlunoForm() {
                   Telefone 1<span className="required-asterisk">*</span>
                 </div>
                 <input
-                  type="text"
+                  type="tel"
                   required
+                  placeholder="(99) 99999-9999"
                   value={aluno.telefone1}
-                  onChange={(e) =>
-                    setAluno({ ...aluno, telefone1: e.target.value })
-                  }
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                    v = v.replace(/^(\d{2})(\d+)/, "($1) $2");
+                    v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+                    setAluno({ ...aluno, telefone1: v });
+                  }}
                 />
               </label>
 
               <label>
                 <div className="label-text-container">Telefone 2</div>
                 <input
-                  type="text"
+                  type="tel"
+                  placeholder="(99) 99999-9999"
                   value={aluno.telefone2}
-                  onChange={(e) =>
-                    setAluno({ ...aluno, telefone2: e.target.value })
-                  }
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                    v = v.replace(/^(\d{2})(\d+)/, "($1) $2");
+                    v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+                    setAluno({ ...aluno, telefone2: v });
+                  }}
                 />
               </label>
 
@@ -241,12 +294,21 @@ export default function AlunoForm() {
                 <div className="label-text-container">
                   Foto<span className="required-asterisk">*</span>
                 </div>
-                <input
-                  type="text"
-                  required
-                  value={aluno.foto}
-                  onChange={(e) => setAluno({ ...aluno, foto: e.target.value })}
-                />
+                <div className="fotoContainer">
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/png, image/jpeg"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    className="uploadButton"
+                    disabled={isUploaded}
+                  >
+                    {isUploaded ? (<CheckIcon />):(<FileUploadIcon />)}
+                  </button>
+                </div>
               </label>
 
               <label>
@@ -256,8 +318,15 @@ export default function AlunoForm() {
                 <input
                   type="text"
                   required
+                  placeholder="99.999.999-9"
                   value={aluno.rg}
-                  onChange={(e) => setAluno({ ...aluno, rg: e.target.value })}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "").slice(0, 9);
+                    v = v.replace(/(\d{2})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d{1})$/, "$1-$2");
+                    setAluno({ ...aluno, rg: v });
+                  }}
                 />
               </label>
 
@@ -268,14 +337,22 @@ export default function AlunoForm() {
                 <input
                   type="text"
                   required
+                  placeholder="000.000.000-00"
                   value={aluno.cpf}
-                  onChange={(e) => setAluno({ ...aluno, cpf: e.target.value })}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                    setAluno({ ...aluno, cpf: v });
+                  }}
                 />
               </label>
 
               <label>
                 <div className="label-text-container">Atestado Médico</div>
                 <select
+                  required
                   value={aluno.atestado_medico}
                   onChange={(e) =>
                     setAluno({ ...aluno, atestado_medico: e.target.value })
@@ -286,65 +363,70 @@ export default function AlunoForm() {
                   <option value="N">Não</option>
                 </select>
               </label>
-
-              <label>
-                <div className="label-text-container">Status</div>
-                <select
-                  value={aluno.ativo}
-                  onChange={(e) =>
-                    setAluno({ ...aluno, ativo: e.target.value })
-                  }
-                >
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
-                </select>
-              </label>
             </div>
 
             <div className="formColumn">
               <label>
                 <div className="label-text-container">Convênio</div>
-                <input
-                  type="text"
+                <select
+                  required
                   value={aluno.convenio}
                   onChange={(e) =>
                     setAluno({ ...aluno, convenio: e.target.value })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="S">Sim</option>
+                  <option value="N">Não</option>
+                </select>
               </label>
-
               <label>
                 <div className="label-text-container">Alergia</div>
-                <input
-                  type="text"
+                <select
+                  required
                   value={aluno.alergia}
                   onChange={(e) =>
                     setAluno({ ...aluno, alergia: e.target.value })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="S">Sim</option>
+                  <option value="N">Não</option>
+                </select>
               </label>
 
               <label>
                 <div className="label-text-container">Uso de Medicamento</div>
-                <input
-                  type="text"
+                <select
+                  required
                   value={aluno.uso_medicamento}
                   onChange={(e) =>
                     setAluno({ ...aluno, uso_medicamento: e.target.value })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="S">Sim</option>
+                  <option value="N">Não</option>
+                </select>
               </label>
 
-              <label>
-                <div className="label-text-container">Horário Medicamento</div>
-                <input
-                  type="time"
-                  value={aluno.medicamento_horario}
-                  onChange={(e) =>
-                    setAluno({ ...aluno, medicamento_horario: e.target.value })
-                  }
-                />
-              </label>
+              {aluno.uso_medicamento === "S" && (
+                <label>
+                  <div className="label-text-container">
+                    Horário Medicamento
+                  </div>
+                  <input
+                    type="time"
+                    value={aluno.medicamento_horario}
+                    onChange={(e) =>
+                      setAluno({
+                        ...aluno,
+                        medicamento_horario: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+              )}
 
               <label>
                 <div className="label-text-container">
@@ -353,6 +435,8 @@ export default function AlunoForm() {
                 <input
                   type="text"
                   required
+                  maxLength={100}
+                  placeholder="Nome da instituição"
                   value={aluno.colegio}
                   onChange={(e) =>
                     setAluno({ ...aluno, colegio: e.target.value })
@@ -387,6 +471,8 @@ export default function AlunoForm() {
                 <input
                   type="text"
                   required
+                  maxLength={50}
+                  placeholder="Ex: Corinthians"
                   value={aluno.time_coracao}
                   onChange={(e) =>
                     setAluno({ ...aluno, time_coracao: e.target.value })
@@ -398,6 +484,8 @@ export default function AlunoForm() {
                 <div className="label-text-container">Indicação</div>
                 <input
                   type="text"
+                  maxLength={100}
+                  placeholder="Quem indicou?"
                   value={aluno.indicacao}
                   onChange={(e) =>
                     setAluno({ ...aluno, indicacao: e.target.value })
@@ -408,6 +496,8 @@ export default function AlunoForm() {
               <label>
                 <div className="label-text-container">Observações</div>
                 <textarea
+                  maxLength={500}
+                  placeholder="Digite observações adicionais"
                   value={aluno.observacao}
                   onChange={(e) =>
                     setAluno({ ...aluno, observacao: e.target.value })
@@ -448,13 +538,14 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              pattern="[0-9]{5}-[0-9]{3}"
+              title="Formato: 12345-678"
+              placeholder="12345-678"
+              maxLength={9}
               value={endereco.cep}
               onChange={handleCepChange}
-              placeholder="XXXXX-XXX"
-              maxLength="9"
             />
           </label>
-
           <label>
             <div className="label-text-container">
               Cidade<span className="required-asterisk">*</span>
@@ -462,31 +553,48 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              placeholder="Digite a cidade"
               value={endereco.cidade}
               onChange={(e) =>
                 setEndereco({ ...endereco, cidade: e.target.value })
               }
             />
           </label>
-
           <label>
             <div className="label-text-container">
               Estado<span className="required-asterisk">*</span>
             </div>
-            <select
-              required
-              value={endereco.estado}
-              onChange={(e) =>
-                setEndereco({ ...endereco, estado: e.target.value })
-              }
-            >
-              <option value="">Selecione</option>
-              <option value="AC">Acre</option>
-              <option value="AL">Alagoas</option>
-              {/* Todos os estados brasileiros */}
+            <select required>
+              <option value="">Selecione o estado</option>
+              <option value="AC">AC</option>
+              <option value="AL">AL</option>
+              <option value="AP">AP</option>
+              <option value="AM">AM</option>
+              <option value="BA">BA</option>
+              <option value="CE">CE</option>
+              <option value="DF">DF</option>
+              <option value="ES">ES</option>
+              <option value="GO">GO</option>
+              <option value="MA">MA</option>
+              <option value="MT">MT</option>
+              <option value="MS">MS</option>
+              <option value="MG">MG</option>
+              <option value="PA">PA</option>
+              <option value="PB">PB</option>
+              <option value="PR">PR</option>
+              <option value="PE">PE</option>
+              <option value="PI">PI</option>
+              <option value="RJ">RJ</option>
+              <option value="RN">RN</option>
+              <option value="RS">RS</option>
+              <option value="RO">RO</option>
+              <option value="RR">RR</option>
+              <option value="SC">SC</option>
+              <option value="SP">SP</option>
+              <option value="SE">SE</option>
+              <option value="TO">TO</option>
             </select>
           </label>
-
           <label>
             <div className="label-text-container">
               Rua<span className="required-asterisk">*</span>
@@ -494,13 +602,13 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              placeholder="Digite o nome da rua"
               value={endereco.rua}
               onChange={(e) =>
                 setEndereco({ ...endereco, rua: e.target.value })
               }
             />
           </label>
-
           <label>
             <div className="label-text-container">
               Número<span className="required-asterisk">*</span>
@@ -508,10 +616,10 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              placeholder="Ex: 12b"
+              maxLength={6}
               value={endereco.numero}
               onChange={handleNumeroChange}
-              placeholder="Apenas números"
-              maxLength="6"
             />
           </label>
         </div>
@@ -526,13 +634,13 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              placeholder="Nome do responsável"
               value={responsavel.nome}
               onChange={(e) =>
                 setResponsavel({ ...responsavel, nome: e.target.value })
               }
             />
           </label>
-
           <label>
             <div className="label-text-container">
               RG<span className="required-asterisk">*</span>
@@ -540,13 +648,18 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              maxLength={12}
+              placeholder="99.999.999-9"
               value={responsavel.rg}
-              onChange={(e) =>
-                setResponsavel({ ...responsavel, rg: e.target.value })
-              }
+              onChange={(e) => {
+                let v = e.target.value.replace(/\D/g, "").slice(0, 9);
+                v = v.replace(/(\d{2})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1})$/, "$1-$2");
+                setResponsavel({ ...responsavel, rg: v });
+              }}
             />
           </label>
-
           <label>
             <div className="label-text-container">
               CPF<span className="required-asterisk">*</span>
@@ -554,13 +667,18 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              // maxLength={11}
+              placeholder="000.000.000-00"
               value={responsavel.cpf}
-              onChange={(e) =>
-                setResponsavel({ ...responsavel, cpf: e.target.value })
-              }
+              onChange={(e) => {
+                let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                setResponsavel({ ...responsavel, cpf: v });
+              }}
             />
           </label>
-
           <label>
             <div className="label-text-container">
               Parentesco<span className="required-asterisk">*</span>
@@ -568,9 +686,13 @@ export default function AlunoForm() {
             <input
               type="text"
               required
+              placeholder="Grau de parentesco"
               value={responsavel.grau_parentesco}
               onChange={(e) =>
-                setResponsavel({ ...responsavel, grau_parentesco: e.target.value })
+                setResponsavel({
+                  ...responsavel,
+                  grau_parentesco: e.target.value,
+                })
               }
             />
           </label>
@@ -601,9 +723,13 @@ export default function AlunoForm() {
               type="number"
               step="0.01"
               required
+              placeholder="0.00"
               value={pagamento.valor_mensalidade}
               onChange={(e) =>
-                setPagamento({ ...pagamento, valor_mensalidade: e.target.value })
+                setPagamento({
+                  ...pagamento,
+                  valor_mensalidade: e.target.value,
+                })
               }
             />
           </label>
@@ -616,6 +742,7 @@ export default function AlunoForm() {
               type="number"
               step="0.01"
               required
+              placeholder="0.00"
               value={pagamento.valor_uniforme}
               onChange={(e) =>
                 setPagamento({ ...pagamento, valor_uniforme: e.target.value })

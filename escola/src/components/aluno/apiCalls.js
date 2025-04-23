@@ -35,3 +35,47 @@ export async function buscarTurmas() {
   return Array.isArray(data) ? data : [];
 }
 
+export const handleGeneratePDF = async () => {
+  try {
+    const pdfData = {
+      aluno: {
+        ...formData,
+        data_nascimento: aluno.data_nascimento,
+        data_matricula: aluno.data_matricula,
+        turma: turmas.find((t) => t.id === formData.id_turma)?.nome || "",
+      },
+      endereco: {
+        estado: formData.estado,
+        cidade: formData.cidade,
+        rua: formData.rua,
+        cep: formData.cep,
+      },
+      responsavel: {
+        nome: formData.nome_responsavel,
+      },
+      pagamento: {
+        situacao: formData.situacao_pagamento,
+      },
+    };
+
+    const response = await fetch("/api/pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pdfData),
+    });
+    if (!response.ok) throw new Error("Failed to generate PDF");
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `ficha_${formData.nome_completo.replace(/\s/g, "_")}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error("PDFerror:" + error);
+    alert('Erro no PDF: '+error.message)
+  }
+};

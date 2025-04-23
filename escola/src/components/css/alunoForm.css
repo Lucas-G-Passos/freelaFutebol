@@ -37,8 +37,10 @@
   max-height: none; /* Prevent viewport overflow */
   overflow: visible; /* Add scroll if content exceeds space */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--surface-a30);
   color: var(--light-a0);
   margin: 2rem auto;
+  border-radius:10px ;
 }
 .formSection {
   display: flex;
@@ -151,4 +153,34 @@
   color: red;
   font-size: 0.9em;
   line-height: 1;
+}
+.uploadButton{
+  width: 10%;
+  background-color: var(--surface-a10);
+  box-shadow: none;
+  border: none;
+}
+
+.fotoContainer{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+.fotoContainer input{
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 80%;
+}
+.fotoContainer button{
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border: 1px solid var(--surface-a30);
+  width: 20%;
+  color: var(--primary-a20);
+  transition: all 0.2s ease;
+}
+.fotoContainer button:hover{
+  color: var(--primary-a50);
+  cursor: pointer;
 }

@@ -142,10 +142,22 @@
   padding: 15px 20px;
   border-radius: 10px;
   transition: background-color 0.2s ease-in-out;
+  display: flex; /* Layout flex para alinhar elementos */
+  align-items: center; /* Centraliza verticalmente */
+  padding: 10px 20px; /* Ajuste de padding */
+  min-height: 70px;
 }
 
 #results li:hover {
   background-color: var(--surface-a30);
+}
+.fotoAluno {
+  width: 80px; /* Tamanho fixo */
+  height: 80px; /* Altura igual à largura para quadrado */
+  object-fit: cover; /* Mantém proporção e preenche o espaço */
+  border-radius: 8px; /* Borda arredondada */
+  margin-right: 15px; /* Espaço entre foto e texto */
+  vertical-align: middle; /* Alinhamento vertical */
 }
 
 .aluno-overlay {
