@@ -5,13 +5,17 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CheckIcon from "@mui/icons-material/Check";
 
 export default function DetailsCard({ aluno, onClose, onUpdate }) {
   if (!aluno) return null;
 
+  const [isUploaded, setUploaded] = useState(false);
   const [isEditing, setEditor] = useState(false);
   const [formData, setFormData] = useState({});
   const [turmas, setTurmas] = useState([]);
+  const [file, setFile] = useState(null);
 
   // Função para encontrar o nome da turma pelo ID
 
@@ -79,10 +83,10 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
         numero: aluno.numero ?? "", // ✅ NOVO
         grau_parentesco: aluno.grau_parentesco ?? "", // ✅ NOVO
         situacao_pagamento: aluno.situacao_pagamento ?? "Adimplente",
+        foto: aluno.foto ?? "",
       });
     }
   }, [aluno]);
-  console.log(formData);
 
   useEffect(() => {
     async function fetchData() {
@@ -92,6 +96,43 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
     fetchData();
   }, []);
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+  const handleUpload = async () => {
+    if (isUploaded == true) return;
+    try {
+      const formData = new FormData();
+      formData.append("foto", file);
+      if (!file) {
+        alert("Selecione um arquivo primeiro!");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        alert("Apenas imagens são permitidas!");
+        return;
+      }
+
+      const response = await fetch("/api/aluno/insertimage", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setFormData({ ...formData, foto: data.fotoUrl });
+      setUploaded(true);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      // Adicione tratamento de erro para o usuário
+      alert("Falha no upload da imagem: " + error.message);
+    }
+  };
   const handleSave = async () => {
     try {
       const response = await fetch("/api/aluno/update", {
@@ -117,6 +158,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
             indicacao: formData.indicacao,
             observacao: formData.observacao,
             ativo: formData.ativo,
+            foto: formData.foto,
           },
           endereco: {
             id: formData.endereco_id,
@@ -266,6 +308,36 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
         </div>
 
         <div className="aluno-details">
+          {/*Foto Section*/}
+          <div className="detail-section foto-detail-section">
+            <h3>Foto</h3>
+            {isEditing ? (
+              <div className="fotoContainerDetail">
+                <img src={aluno.foto} />
+                <div className="inputContainerDetail">
+                  
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/png, image/jpeg"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    className="uploadButton"
+                    disabled={isUploaded}
+                  >
+                    {isUploaded ? <CheckIcon /> : <FileUploadIcon />}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <img src={aluno.foto} />
+              </div>
+            )}
+          </div>
+
           {/* Personal Information */}
           <div className="detail-section">
             <h3>Informações Pessoais</h3>

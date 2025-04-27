@@ -1,0 +1,218 @@
+/* ============== NAVBAR RESPONSIVO ============== */
+@media (max-width: 768px) {
+  #alunoRoot {
+    min-height: 100vh;
+  }
+
+  #navbar {
+    width: 100%;
+    height: 60px;
+    top: auto;
+    bottom: 0;
+    flex-direction: row;
+    padding: 5px;
+    border-top: 1px solid var(--surface-a50);
+    z-index: 1000;
+  }
+
+  #top-button-cont {
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 2px;
+  }
+  #bottom-button-cont{
+    justify-content: flex-end;
+    padding-bottom: 0;
+  }
+
+  .navbutton {
+    height: 50px;
+    min-width: 55px;
+    max-width: 55px;
+    font-size: 0.6em;
+    padding: 2px;
+  }
+
+  .navbutton svg {
+    font-size: 1.8em !important;
+  }
+}
+
+/* ============== PÁGINA ALUNO RESPONSIVA ============== */
+@media (max-width: 1200px) {
+  #alunoRoot {
+    grid-template-columns: 1fr;
+    padding: 70px 10px 10px;
+  }
+
+  .alunoCount {
+    font-size: 1.2em;
+    text-align: center;
+    margin: 15px 0;
+    padding: 10px;
+    background: var(--surface-a10);
+    border-radius: 8px;
+  }
+
+  #inputField {
+    grid-template-columns: 1fr;
+    width: 95%;
+  }
+  #inputField {
+    grid-template-columns: 1fr;
+    width: 95%;
+  }
+
+  .input-wrapper {
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  #filterOptions select,
+  #inputField button,
+  .turma-select {
+    width: 100% !important;
+    height: 45px;
+    font-size: 1em;
+  }
+
+  #results {
+    overflow: auto;
+    font-size: 1.3em;
+    padding: 15px;
+    padding-bottom: 60px;
+    box-sizing: border-box;
+    margin-top: 15px;
+    max-height: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #results li {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .fotoAluno {
+    margin-bottom: 10px;
+  }
+}
+
+/* ============== FORMULÁRIO RESPONSIVO ============== */
+@media (max-width: 768px) {
+  #alunoFormRoot {
+    padding: 1rem 5px;
+  }
+
+  .formRoot {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .formColumnContainer {
+    gap: 1rem;
+  }
+
+  .formSection {
+    margin: 5px;
+    padding: 5px;
+  }
+
+  .formSection input,
+  .formSection select,
+  .formSection textarea {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+
+  .fotoContainer button {
+    padding: 8px;
+    font-size: 0.8em;
+  }
+
+  .formFooter button {
+    font-size: 0.9em;
+    padding: 12px;
+  }
+
+  .detail-section {
+    padding: 1rem;
+  }
+}
+
+/* ============== DETAIL CARD RESPONSIVO ============== */
+@media (max-width: 768px) {
+  .aluno-card {
+    width: 95%;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .aluno-details {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-section {
+    padding: 1rem;
+  }
+
+  .editSection input,
+  .editSection select {
+    width: 100% !important;
+  }
+
+  .actionButtons {
+    gap: 0.3rem;
+  }
+
+  .alunosCardHeader {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* ============== INPUT FIELD RESPONSIVO ============== */
+@media (max-width: 480px) {
+  .turma-select,
+  #filterOptions select {
+    font-size: 0.9em;
+  }
+
+  .AlunoSearchInput input[type="date"] {
+    font-size: 0.8em;
+  }
+
+  #inputField button {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+}
+
+/* ============== AJUSTES PARA TELAS MUITO PEQUENAS ============== */
+@media (max-width: 360px) {
+  .formHeader {
+    font-size: 1.1em;
+  }
+
+  .navbutton {
+    min-width: 45px;
+    height: 45px;
+    font-size: 0.5em;
+  }
+
+  #results h3 {
+    font-size: 1.5em;
+  }
+}
+
+/* ============== ORIENTAÇÃO LANDSCAPE ============== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .aluno-card {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .aluno-overlay {
+    padding: 1rem 0;
+  }
+}

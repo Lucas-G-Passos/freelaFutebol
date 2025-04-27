@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { buscarAlunos, buscarTurmas } from "./apiCalls";
+import { buscarAlunos, buscarTurmas, getNalunos } from "./apiCalls";
 import DetailsCard from "./detailCard";
 import AlunoSearchInput from "./inputField";
+import Niver from "./niver";
 
 import "./../css/aluno.css";
 
@@ -11,6 +12,7 @@ export default function Aluno() {
   const [searchValue, setSearchValue] = useState("");
   const [results, setResults] = useState([]);
   const [turmas, setTurmas] = useState([]);
+  const [alunosCount, setCount] = useState([]);
 
   const handleSearch = async () => {
     if (!searchValue && searchField !== "pagamento") {
@@ -28,6 +30,9 @@ export default function Aluno() {
   useEffect(() => {
     async function fetchData() {
       const turmas = await buscarTurmas();
+      const count = await getNalunos();
+      const totalAlunos = count.total || 0;
+      setCount(totalAlunos);
       setTurmas(turmas);
     }
     fetchData();
@@ -51,30 +56,36 @@ export default function Aluno() {
               id="search"
             >
               <option value="nome_completo">Nome</option>
-              <option value="matricula">N° Matrícula</option>
-              <option value="cpf">CPF</option>
+
               <option value="turma">Turma</option>
-              <option value="pagamento">Situação de Pagamento</option>
+
               <option value="data_matricula">Data de Matrícula</option>
-              <option value="ultimo_pagamento">Último Pagamento</option>
             </select>
           </div>
 
           <button onClick={handleSearch}>Buscar</button>
         </div>
       </div>
-
+      <div className="alunoCount">Número de alunos:{alunosCount}</div>
+      <div
+        style={{
+          gridColumn: "2 / 8",
+          gridRow: "4",
+          zIndex: 1,
+        }}
+      >
+        <Niver />
+      </div>
       <div id="results">
-        <h3>Resultados:</h3>
+        <h3>Resultados da Pesquisa:</h3>
         {results.length > 0 ? (
           <ul>
-            {results.map((aluno, index) => (
-              <li key={index} onClick={() => setSelectedAluno(aluno)}>
-                <img src={aluno.foto} className="fotoAluno"/>
-                
+            {results.map((aluno) => (
+              <li key={aluno.aluno_id} onClick={() => setSelectedAluno(aluno)}>
+                <img src={aluno.foto} className="fotoAluno" />
                 {aluno.aluno_id} - {aluno.nome_completo} - Turma:{" "}
                 {aluno.nome_turma}
-                {console.log(results[0])}
+                {console.table(aluno)}
               </li>
             ))}
           </ul>

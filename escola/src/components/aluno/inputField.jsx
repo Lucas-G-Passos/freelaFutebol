@@ -26,11 +26,19 @@ export default function AlunoSearchInput({
         onChange={(e) => setSearchValue(e.target.value)}
         className="turma-select"
       >
-        <option value=''>Selecione uma Situação</option>
+        <option value="">Selecione uma Situação</option>
         <option value="adimplente">Adimplente</option>
         <option value="inadimplente">Inadimplente</option>
       </select>
     );
+  } else if (searchField === "data_matricula") {
+    return(
+      <input
+      type="date"
+      onChange={(e) => setSearchValue(e.target.value)}
+      >
+      </input>
+    )
   } else {
     return (
       <input

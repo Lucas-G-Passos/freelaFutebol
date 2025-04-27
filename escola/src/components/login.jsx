@@ -22,7 +22,7 @@ export default function Login() {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
-                navigate('/dashboard');
+                navigate('/aluno');
             } else {
                 const data = await response.json();
                 setError(data.message);

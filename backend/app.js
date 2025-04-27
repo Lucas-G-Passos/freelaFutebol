@@ -7,17 +7,19 @@ import routerPDF from './routes/pdfGeneratorRoute.js'
 import { configDotenv } from "dotenv";
 configDotenv();
 
+
 const SECRET = process.env.SECRET;
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173"); // Your frontend origin
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "8"); // Your frontend origin
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   next();
+// });
 
 // Example Express middleware
 app.use((req, res, next) => {

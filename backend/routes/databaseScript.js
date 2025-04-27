@@ -11,6 +11,7 @@ import {
   getInadimplenteNum,
   getNAlunos,
   updateInTable,
+  getAniversariantes
 } from "./functions/functions.js";
 import express from "express";
 import multer from "multer";
@@ -163,19 +164,6 @@ router.post("/aluno/check", async (req, res) => {
   }
 });
 
-router.post("/funcionario/check", async (req, res) => {
-  const { field, value } = req.body;
-
-  try {
-    let funcionario;
-    funcionario = await getByField("funcionarios", field, value);
-    res.json(funcionario || { message: "funcionario not found" });
-  } catch (error) {
-    console.error("Error fetching aluno:", error);
-    res.status(500).json({ error: "Database query failed" });
-  }
-});
-
 router.post("/insert", validateInsertData, async (req, res) => {
   const { tableName, data } = req.body;
   console.log("Recebendo dados validados:", req.body);
@@ -264,5 +252,15 @@ router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.get('/aluno/aniversariantes',async (req,res)=>{
+  try {
+    const aniversariantes = await getAniversariantes();
+    res.json(aniversariantes || { message: "Nenhum aniversariante" });
+  } catch (error) {
+    console.error('Erro ao buscar Aniversariantes'+error);
+    res.status(500).json({error:error.message});
+  }
+})
 
 export default router;

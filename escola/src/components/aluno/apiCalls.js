@@ -34,7 +34,11 @@ export async function buscarTurmas() {
   const data = await response.json();
   return Array.isArray(data) ? data : [];
 }
-
+export async function getNalunos() {
+  const response = await fetch("http://localhost:5000/api/aluno/total");
+  const data = await response.json();
+  return data;
+}
 export const handleGeneratePDF = async () => {
   try {
     const pdfData = {
@@ -76,6 +80,6 @@ export const handleGeneratePDF = async () => {
     URL.revokeObjectURL(downloadUrl);
   } catch (error) {
     console.error("PDFerror:" + error);
-    alert('Erro no PDF: '+error.message)
+    alert("Erro no PDF: " + error.message);
   }
 };

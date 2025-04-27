@@ -361,6 +361,68 @@ async function getCompleteAluno(id) {
   }
 }
 
+async function getAniversariantes(){
+  try {
+    const [aluno] = await db.query(
+      `SELECT 
+        a.id AS aluno_id,
+        a.id_turma,
+        a.nome_completo,
+        a.data_nascimento,
+        a.data_matricula,
+        a.telefone1,
+        a.telefone2,
+        a.foto,
+        a.rg,
+        a.cpf,
+        a.convenio,
+        a.alergia,
+        a.uso_medicamento,
+        a.medicamento_horario,
+        a.atestado_medico,
+        a.colegio,
+        a.colegio_ano,
+        a.time_coracao,
+        a.indicacao,
+        a.observacao,
+        a.ativo,
+        t.nome AS nome_turma,
+        r.id AS responsavel_id,
+        r.nome AS responsavel_nome,
+        r.rg AS responsavel_rg,
+        r.cpf AS responsavel_cpf,
+        r.grau_parentesco,
+        e.id AS endereco_id,
+        e.cep,
+        e.cidade,
+        e.estado,
+        e.numero,
+        e.rua,
+        CASE 
+          WHEN EXISTS (
+            SELECT 1 FROM responsaveis r2
+            JOIN pagamentos p ON p.responsavel_id = r2.id
+            WHERE r2.id_aluno = a.id AND (p.status = 'pago' OR p.data_vencimento >= CURDATE())
+          ) THEN 'Adimplente'
+          ELSE 'Inadimplente'
+        END AS situacao_pagamento
+      FROM alunos a
+      LEFT JOIN turmas t ON a.id_turma = t.id
+      JOIN endereco e ON a.id_endereco = e.id
+      LEFT JOIN responsaveis r ON r.id_aluno = a.id
+      WHERE 
+        MONTH(a.data_nascimento) = MONTH(CURRENT_DATE())
+        AND a.data_nascimento IS NOT NULL
+      ORDER BY DAY(a.data_nascimento)
+      `
+    )
+    return aluno || null
+  } catch (error) {
+    console.error('Erro ao pegar aniversariantes: '+error);
+    throw error
+  }
+}
+
 export {
   getCompleteAluno,
   updateInTable,
@@ -375,4 +437,5 @@ export {
   getAdimplente,
   getNAlunos,
   getInadimplenteNum,
+  getAniversariantes
 };
