@@ -38,8 +38,8 @@ export default function Dashboard() {
         async function fetchData() {
             try {
                 const [inadRes, totalRes] = await Promise.all([
-                    fetch('http://localhost:5000/api/aluno/inadimplente/total'),
-                    fetch('http://localhost:5000/api/aluno/total')
+                    fetch(`http://${import.meta.env.VITE_BACKENDURL}/api/aluno/inadimplente/total`),
+                    fetch(`http://${import.meta.env.VITE_BACKENDURL}/api/aluno/total`)
                 ]);
 
                 const inadData = await inadRes.json();

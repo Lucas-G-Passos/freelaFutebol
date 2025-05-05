@@ -1,12 +1,24 @@
+/* ==================== GLOBAL ==================== */
+/* Evita estouro de padding/margin e facilita cálculos de tamanho */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* ============== NAVBAR RESPONSIVO ============== */
 @media (max-width: 768px) {
+  * {
+    overflow-x: hidden;
+  }
+
   #alunoRoot {
     min-height: 100vh;
   }
 
   #navbar {
     width: 100%;
-    height: 60px;
+    height: 110px;
     top: auto;
     bottom: 0;
     flex-direction: row;
@@ -20,15 +32,16 @@
     justify-content: space-evenly;
     gap: 2px;
   }
-  #bottom-button-cont{
-    justify-content: flex-end;
-    padding-bottom: 0;
+
+  /* Esconde totalmente o container inferior */
+  #bottom-button-cont {
+    display: none;
   }
 
   .navbutton {
-    height: 50px;
-    min-width: 55px;
-    max-width: 55px;
+    height: 80px; /* única declaração de height */
+    min-width: 120px;
+    max-width: 120px;
     font-size: 0.6em;
     padding: 2px;
   }
@@ -36,11 +49,17 @@
   .navbutton svg {
     font-size: 1.8em !important;
   }
+
+  /* Botão de logout “mobile” */
+  #logout-mobile {
+    display: flex;
+  }
 }
 
 /* ============== PÁGINA ALUNO RESPONSIVA ============== */
 @media (max-width: 1200px) {
   #alunoRoot {
+    margin-bottom: 110px;
     grid-template-columns: 1fr;
     padding: 70px 10px 10px;
   }
@@ -54,34 +73,55 @@
     border-radius: 8px;
   }
 
+  /* Container de busca vira um grid flexível */
   #inputField {
-    grid-template-columns: 1fr;
+    top: 0;
+    position: sticky;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     width: 95%;
-  }
-  #inputField {
-    grid-template-columns: 1fr;
-    width: 95%;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+    height: 180px;
   }
 
+  /* Empacota inputs e controles num flex vertical, se faltar espaço */
   .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     padding: 10px 0;
+    height: 100%;
   }
 
-  #filterOptions select,
+  /* Aplica a todos os elementos de formulário do inputField de uma vez */
+  #inputField input,
+  #inputField select,
   #inputField button,
   .turma-select {
-    width: 100% !important;
+    width: 100%;
     height: 45px;
-    font-size: 1em;
+    font-size: 0.8em;
+    box-sizing: border-box;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #filterOptions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   #results {
     overflow: auto;
-    font-size: 1.3em;
+    font-size: .9em;
     padding: 15px;
     padding-bottom: 60px;
-    box-sizing: border-box;
     margin-top: 15px;
     max-height: 100%;
     -webkit-overflow-scrolling: touch;
@@ -123,8 +163,15 @@
   .formSection textarea {
     font-size: 0.9em;
     padding: 8px;
+    width: 80%;
   }
 
+  .fotoContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
   .fotoContainer button {
     padding: 8px;
     font-size: 0.8em;
@@ -142,7 +189,11 @@
 
 /* ============== DETAIL CARD RESPONSIVO ============== */
 @media (max-width: 768px) {
+  
+  
   .aluno-card {
+    margin-top: 110px;
+    margin-bottom: 110px;
     width: 95%;
     padding: 1rem;
     gap: 1rem;
@@ -185,6 +236,13 @@
   #inputField button {
     font-size: 0.9em;
     padding: 8px;
+  }
+}
+
+/* ============== ANVIERSARIANTES ============== */
+@media (max-width: 768px) {
+  .rootAniversariantes{
+    font-size: .9em;
   }
 }
 

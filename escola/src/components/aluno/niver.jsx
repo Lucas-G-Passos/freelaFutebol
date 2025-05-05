@@ -9,7 +9,14 @@ export default function Niver() {
   useEffect(() => {
     async function fetchAniversariantes() {
       try {
-        const response = await fetch("/api/aluno/aniversariantes");
+        const response = await fetch(
+          `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/aniversariantes`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         const data = await response.json();
         setNivers(data || []);
       } catch (error) {
@@ -27,8 +34,7 @@ export default function Niver() {
           nivers.map((aluno) => (
             <li key={aluno.id} onClick={() => setSelectedAluno(aluno)}>
               <img src={aluno.foto} className="fotoAluno" />
-              {aluno.aluno_id} - {aluno.nome_completo} -{" "}
-              {console.table(aluno)}
+              {aluno.aluno_id} - {aluno.nome_completo} - 
               {new Date(aluno.data_nascimento).toLocaleDateString("pt-BR", {
                 day: "2-digit",
                 month: "2-digit",
@@ -45,7 +51,7 @@ export default function Niver() {
         aluno={selectedAluno}
         onClose={() => setSelectedAluno(null)}
         onUpdate={(updatedAluno) => {
-          setResults((prevResults) =>
+          setNivers((prevResults) =>
             prevResults.map((a) =>
               a.aluno_id === updatedAluno.aluno_id
                 ? { ...a, ...updatedAluno }

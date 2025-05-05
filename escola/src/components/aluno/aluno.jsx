@@ -12,7 +12,7 @@ export default function Aluno() {
   const [searchValue, setSearchValue] = useState("");
   const [results, setResults] = useState([]);
   const [turmas, setTurmas] = useState([]);
-  const [alunosCount, setCount] = useState([]);
+  const [alunosCount, setCount] = useState(0);
 
   const handleSearch = async () => {
     if (!searchValue && searchField !== "pagamento") {
@@ -29,11 +29,18 @@ export default function Aluno() {
 
   useEffect(() => {
     async function fetchData() {
-      const turmas = await buscarTurmas();
-      const count = await getNalunos();
-      const totalAlunos = count.total || 0;
-      setCount(totalAlunos);
-      setTurmas(turmas);
+      try {
+        const [turmasData, countData] = await Promise.all([
+          buscarTurmas(),
+          getNalunos(),
+        ]);
+        setTurmas(turmasData);
+        setCount(countData.total || 0);
+      } catch (error) {
+        console.error("Failed to load initial data:", error);
+        alert(error.message);
+        setCount(0);
+      }
     }
     fetchData();
   }, []);
@@ -56,9 +63,7 @@ export default function Aluno() {
               id="search"
             >
               <option value="nome_completo">Nome</option>
-
               <option value="turma">Turma</option>
-
               <option value="data_matricula">Data de Matrícula</option>
             </select>
           </div>
@@ -66,7 +71,7 @@ export default function Aluno() {
           <button onClick={handleSearch}>Buscar</button>
         </div>
       </div>
-      <div className="alunoCount">Número de alunos:{alunosCount}</div>
+      <div className="alunoCount">Número de alunos: {alunosCount}</div>
       <div
         style={{
           gridColumn: "2 / 8",
@@ -83,9 +88,7 @@ export default function Aluno() {
             {results.map((aluno) => (
               <li key={aluno.aluno_id} onClick={() => setSelectedAluno(aluno)}>
                 <img src={aluno.foto} className="fotoAluno" />
-                {aluno.aluno_id} - {aluno.nome_completo} - Turma:{" "}
-                {aluno.nome_turma}
-                {console.table(aluno)}
+                {aluno.aluno_id} - {aluno.nome_completo} - Turma: {aluno.nome_turma}
               </li>
             ))}
           </ul>
@@ -98,14 +101,22 @@ export default function Aluno() {
         aluno={selectedAluno}
         onClose={() => setSelectedAluno(null)}
         onUpdate={(updatedAluno) => {
-          setResults((prevResults) =>
-            prevResults.map((a) =>
-              a.aluno_id === updatedAluno.id ? { ...a, ...updatedAluno } : a
+          // Usa o campo correto de ID
+          const updatedId = updatedAluno.aluno_id ?? updatedAluno.id;
+
+          // Atualiza lista de resultados
+          setResults((prev) =>
+            prev.map((a) =>
+              a.aluno_id === updatedId
+                ? { ...a, ...updatedAluno, aluno_id: updatedId }
+                : a
             )
           );
+
+          // Atualiza detail card
           setSelectedAluno((prev) =>
-            prev && prev.aluno_id === updatedAluno.id
-              ? { ...prev, ...updatedAluno }
+            prev && prev.aluno_id === updatedId
+              ? { ...prev, ...updatedAluno, aluno_id: updatedId }
               : prev
           );
         }}

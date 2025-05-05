@@ -90,7 +90,7 @@ async function getAlunos() {
 async function getNAlunos() {
   try {
     const [rows] = await db.query("SELECT COUNT(*) AS total FROM alunos");
-    return rows[0];
+    return rows[0].total;
   } catch (error) {
     console.error(error);
     throw error;
@@ -167,7 +167,7 @@ async function getByField(
       let query = `
         SELECT 
   a.id AS aluno_id,
-  a.id_turma, -- ✅ Campo adicionado
+  a.id_turma,
   a.nome_completo,
   a.data_nascimento,
   a.data_matricula,

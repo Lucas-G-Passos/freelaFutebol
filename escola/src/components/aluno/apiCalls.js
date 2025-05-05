@@ -1,6 +1,5 @@
-// services/alunoService.js
 export async function buscarAlunos(field, value) {
-  let url = "http://192.168.1.171:5000/api/aluno/check";
+  let url = `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/check`;
   let method = "POST";
   let body = JSON.stringify({
     field,
@@ -9,9 +8,9 @@ export async function buscarAlunos(field, value) {
 
   if (field === "pagamento") {
     if (value === "adimplente") {
-      url = "http://192.168.1.171:5000/api/aluno/adimplente";
+      url = `${import.meta.env.VITE_BACKENDURL}/api/aluno/adimplente`;
     } else if (value === "inadimplente") {
-      url = "http://192.168.1.171:5000/api/aluno/inadimplente";
+      url = `${import.meta.env.VITE_BACKENDURL}/api/aluno/inadimplente`;
     } else {
       throw new Error("Situação de pagamento inválida");
     }
@@ -21,7 +20,10 @@ export async function buscarAlunos(field, value) {
 
   const response = await fetch(url, {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
     ...(body && { body }),
   });
 
@@ -30,15 +32,36 @@ export async function buscarAlunos(field, value) {
 }
 
 export async function buscarTurmas() {
-  const response = await fetch("http://localhost:5000/api/turmas");
+  const response = await fetch(
+    `http://${import.meta.env.VITE_BACKENDURL}/api/turmas`,
+    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  );
   const data = await response.json();
   return Array.isArray(data) ? data : [];
 }
+
+// apiCalls.js
 export async function getNalunos() {
-  const response = await fetch("http://localhost:5000/api/aluno/total");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(
+      `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/total`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch student count:", error);
+    throw new Error(
+      "Could not retrieve student count. Please try again later."
+    );
+  }
 }
+
 export const handleGeneratePDF = async () => {
   try {
     const pdfData = {
@@ -62,9 +85,12 @@ export const handleGeneratePDF = async () => {
       },
     };
 
-    const response = await fetch("/api/pdf", {
+    const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/pdf`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
       body: JSON.stringify(pdfData),
     });
     if (!response.ok) throw new Error("Failed to generate PDF");

@@ -11,11 +11,12 @@ import {
   getInadimplenteNum,
   getNAlunos,
   updateInTable,
-  getAniversariantes
+  getAniversariantes,
 } from "./functions/functions.js";
 import express from "express";
 import multer from "multer";
-import uploadImage from './../imgKit.js'
+import uploadImage from "./../imgKit.js";
+import db from "../db.js";
 const router = express.Router();
 
 router.use(express.json());
@@ -115,10 +116,15 @@ router.get("/turmas", async (req, res) => {
 router.get("/aluno/total", async (req, res) => {
   try {
     const total = await getNAlunos();
-    res.json(total || { message: "Nenhum Aluno" });
+    res.json({
+      total: total || 0,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "query falha" });
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch student count",
+    });
   }
 });
 
@@ -164,34 +170,91 @@ router.post("/aluno/check", async (req, res) => {
   }
 });
 
-router.post("/insert", validateInsertData, async (req, res) => {
+router.post("/insert", async (req, res) => {
   const { tableName, data } = req.body;
-  console.log("Recebendo dados validados:", req.body);
+  console.log("Recebendo dados para inserção:", req.body);
 
+  const conn = await db.getConnection();
   try {
-    const result = await insertIntoTable(tableName, data);
+    await conn.beginTransaction();
+
+    // Validações específicas por tabela
+    switch (tableName) {
+      case "endereco":
+        if (data.cep) {
+          const cepRaw = data.cep.replace(/-/g, "");
+          if (!/^\d{8}$/.test(cepRaw)) {
+            throw {
+              code: "INVALID_CEP",
+              message: "CEP deve conter 8 dígitos numéricos",
+              field: "cep",
+            };
+          }
+          data.cep = cepRaw;
+        }
+        break;
+
+      case "alunos":
+        if (!data.nome_completo) {
+          throw {
+            code: "MISSING_FIELD",
+            message: "Nome completo é obrigatório",
+            field: "nome_completo",
+          };
+        }
+        // Adicionar outras validações específicas do aluno
+        break;
+
+      case "responsaveis":
+        if (!data.grau_parentesco) {
+          throw {
+            code: "MISSING_FIELD",
+            message: "Grau de parentesco é obrigatório",
+            field: "grau_parentesco",
+          };
+        }
+        break;
+    }
+
+    // Executa a inserção
+    const [result] = await conn.query(`INSERT INTO ${tableName} SET ?`, [data]);
+
+    // Commit da transação
+    await conn.commit();
+
+    // Busca o registro recém-inserido
+    const [newRecord] = await conn.query(
+      `SELECT * FROM ${tableName} WHERE id = ?`,
+      [result.insertId]
+    );
+
     res.json({
       success: true,
-      id: result.insertId,
+      data: newRecord[0],
       message: `${tableName} inserido com sucesso`,
     });
   } catch (error) {
+    await conn.rollback();
     console.error(`Erro na inserção (${tableName}):`, error);
 
+    // Mapeamento de erros conhecidos
     const response = {
-      error: "Erro no banco de dados",
-      details: error.message,
+      error: error.code || "DATABASE_ERROR",
+      message: error.message || "Erro no banco de dados",
+      field: error.field || null,
     };
 
+    // Tratamento específico para códigos de erro do MySQL
     if (error.code === "ER_DATA_TOO_LONG") {
-      response.details = "Dados excedem o tamanho permitido";
+      response.message = "Dados excedem o tamanho permitido";
       response.field = error.sqlMessage.match(/column '(.+)'/i)?.[1];
     }
 
-    res.status(500).json(response);
+    res.status(error.code === "MISSING_FIELD" ? 400 : 500).json(response);
+  } finally {
+    conn.release();
   }
 });
-
 router.put("/aluno/update", async (req, res) => {
   const { aluno, endereco, responsavel } = req.body;
 
@@ -199,46 +262,109 @@ router.put("/aluno/update", async (req, res) => {
     return res.status(400).json({ error: "IDs obrigatórios não fornecidos" });
   }
 
+  const conn = await db.getConnection();
   try {
-    // Validação do endereço na atualização
+    await conn.beginTransaction();
+
+    // Validação do CEP
     if (endereco.cep) {
-      const cep = endereco.cep.replace(/-/g, "");
-      if (!/^\d{8}$/.test(cep)) {
+      const cepRaw = endereco.cep.replace(/-/g, "");
+      if (!/^\d{8}$/.test(cepRaw)) {
+        await conn.rollback();
         return res.status(400).json({
           error: "CEP inválido na atualização",
           details: "O CEP deve conter 8 dígitos numéricos",
         });
       }
-      endereco.cep = cep;
+      endereco.cep = cepRaw;
     }
 
-    const alunoSuccess = await updateInTable("alunos", aluno, aluno.id);
-    const enderecoSuccess = await updateInTable(
-      "endereco",
-      endereco,
-      endereco.id
+    // Atualiza endereço
+    await conn.query(
+      `UPDATE endereco SET estado = ?, cidade = ?, rua = ?, cep = ? WHERE id = ?`,
+      [
+        endereco.estado,
+        endereco.cidade,
+        endereco.rua,
+        endereco.cep,
+        endereco.id,
+      ]
     );
 
-    if (alunoSuccess && enderecoSuccess) {
-      res.json({ message: "Dados atualizados com sucesso!" });
-    } else {
-      res
-        .status(500)
-        .json({ error: "Falha ao atualizar um ou mais registros" });
+    // Atualiza aluno
+    await conn.query(
+      `UPDATE alunos SET 
+        nome_completo = ?, telefone1 = ?, telefone2 = ?, rg = ?, cpf = ?, convenio = ?,
+        alergia = ?, uso_medicamento = ?, medicamento_horario = ?, atestado_medico = ?,
+        colegio = ?, colegio_ano = ?, time_coracao = ?, indicacao = ?, observacao = ?,
+        ativo = ?, foto = ?, id_turma = ?
+      WHERE id = ?`,
+      [
+        aluno.nome_completo,
+        aluno.telefone1,
+        aluno.telefone2,
+        aluno.rg,
+        aluno.cpf,
+        aluno.convenio,
+        aluno.alergia,
+        aluno.uso_medicamento,
+        aluno.medicamento_horario,
+        aluno.atestado_medico,
+        aluno.colegio,
+        aluno.colegio_ano,
+        aluno.time_coracao,
+        aluno.indicacao,
+        aluno.observacao,
+        aluno.ativo,
+        aluno.foto,
+        aluno.id_turma,
+        aluno.id,
+      ]
+    );
+
+    // (Opcional) Atualiza responsável, se necessário
+    if (responsavel && responsavel.id) {
+      await conn.query(
+        `UPDATE responsaveis SET nome = ?, cpf = ?, rg = ?, grau_parentesco = ? WHERE id = ?`,
+        [
+          responsavel.nome,
+          responsavel.cpf,
+          responsavel.rg,
+          responsavel.grau_parentesco,
+          responsavel.id,
+        ]
+      );
     }
+
+    // Commit apenas se todas as operações foram bem-sucedidas
+    await conn.commit();
+
+    // Buscar o aluno completo atualizado (JOIN com endereço e responsável)
+    const [rows] = await conn.query(
+      `SELECT a.*, e.estado, e.cidade, e.rua, e.cep, r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.rg AS responsavel_rg, r.grau_parentesco
+       FROM alunos a
+       JOIN endereco e ON e.id = a.endereco_id
+       LEFT JOIN responsaveis r ON r.id = a.responsavel_id
+       WHERE a.id = ?`,
+      [aluno.id]
+    );
+
+    res.json(rows[0]);
   } catch (error) {
+    await conn.rollback();
     console.error("Erro ao atualizar aluno:", error);
     res.status(500).json({
       error: "Erro interno do servidor",
       details: error.message,
     });
+  } finally {
+    conn.release();
   }
 });
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
-  
   try {
     const file = req.file;
     if (!file) {
@@ -253,14 +379,14 @@ router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
   }
 });
 
-router.get('/aluno/aniversariantes',async (req,res)=>{
+router.get("/aluno/aniversariantes", async (req, res) => {
   try {
     const aniversariantes = await getAniversariantes();
     res.json(aniversariantes || { message: "Nenhum aniversariante" });
   } catch (error) {
-    console.error('Erro ao buscar Aniversariantes'+error);
-    res.status(500).json({error:error.message});
+    console.error("Erro ao buscar Aniversariantes" + error);
+    res.status(500).json({ error: error.message });
   }
-})
+});
 
 export default router;

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./../css/alunoForm.css";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import CheckIcon from '@mui/icons-material/Check';
+import CheckIcon from "@mui/icons-material/Check";
 
 export default function AlunoForm() {
   const [turmas, setTurmas] = useState([]);
   const [file, setFile] = useState(null);
   const [isUploaded, setUploaded] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // State declarations remain unchanged
   const [aluno, setAluno] = useState({
     nome_completo: "",
     data_nascimento: "",
@@ -49,18 +53,26 @@ export default function AlunoForm() {
     data_vencimento: "",
     valor_mensalidade: "",
     valor_uniforme: "",
+    tipo: "",
   });
 
   useEffect(() => {
     const fetchTurmas = async () => {
       try {
-        const response = await fetch("http://192.168.1.171:5000/api/turmas");
+        const response = await fetch(
+          `http://${import.meta.env.VITE_BACKENDURL}/api/turmas`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         if (!response.ok) throw new Error(`Erro: ${response.status}`);
         const data = await response.json();
         setTurmas(data);
       } catch (error) {
-        console.error("Erro ao buscar turmas:", error);
-        setTurmas([]);
+        setError("Erro ao buscar turmas: " + error.message);
+        console.error(error);
       }
     };
     fetchTurmas();
@@ -69,11 +81,13 @@ export default function AlunoForm() {
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
+
   const handleUpload = async () => {
-    if (isUploaded == true) return;
+    if (isUploaded) return;
     try {
       const formData = new FormData();
       formData.append("foto", file);
+
       if (!file) {
         alert("Selecione um arquivo primeiro!");
         return;
@@ -84,25 +98,28 @@ export default function AlunoForm() {
         return;
       }
 
-      const response = await fetch("/api/aluno/insertimage", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/insertimage`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
 
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      console.log(data)
       setAluno({ ...aluno, foto: data.fotoUrl });
       setUploaded(true);
     } catch (error) {
-      console.error("Erro no upload:", error);
-      // Adicione tratamento de erro para o usuário
-      alert("Falha no upload da imagem: " + error.message);
+      setError("Falha no upload da imagem: " + error.message);
+      console.error(error);
     }
   };
+
   const handleCepChange = (e) => {
     let value = e.target.value
       .replace(/\D/g, "")
@@ -118,13 +135,23 @@ export default function AlunoForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    };
+
     try {
-      // 1. Insira o endereço
+      // 1. Insert Endereço
       const enderecoResponse = await fetch(
-        "http://192.168.1.171:5000/api/insert",
+        `http://${import.meta.env.VITE_BACKENDURL}/api/insert`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          ...requestOptions,
           body: JSON.stringify({
             tableName: "endereco",
             data: { ...endereco, cep: endereco.cep.replace(/-/g, "") },
@@ -134,55 +161,39 @@ export default function AlunoForm() {
       if (!enderecoResponse.ok) throw new Error("Erro ao inserir endereço");
       const enderecoData = await enderecoResponse.json();
 
-      // Validação crítica: Verifique se o ID foi retornado
-      if (!enderecoData.id)
-        throw new Error("ID do endereço não encontrado na resposta");
-
-      // 2. Insira o aluno (COM id_endereco)
-      const alunoData = {
-        ...aluno,
-        id_endereco: enderecoData.id, // ✅ Garanta que este campo está presente
-      };
-
-      // Log para depuração
-      console.log("Dados do aluno a serem enviados:", alunoData);
-
+      // 2. Insert Aluno
       const alunoResponse = await fetch(
-        "http://192.168.1.171:5000/api/insert",
+        `http://${import.meta.env.VITE_BACKENDURL}/api/insert`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          ...requestOptions,
           body: JSON.stringify({
             tableName: "alunos",
-            data: alunoData,
+            data: { ...aluno, id_endereco: enderecoData.id },
           }),
         }
       );
       if (!alunoResponse.ok) throw new Error("Erro ao inserir aluno");
-      const alunoResult = await alunoResponse.json();
+      const alunoData = await alunoResponse.json();
 
-      // 3. Insere Responsável
+      // 3. Insert Responsável
       const responsavelResponse = await fetch(
-        "http://192.168.1.171:5000/api/insert",
+        `http://${import.meta.env.VITE_BACKENDURL}/api/insert`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          ...requestOptions,
           body: JSON.stringify({
             tableName: "responsaveis",
-            data: { ...responsavel, id_aluno: alunoResult.id },
+            data: { ...responsavel, id_aluno: alunoData.id },
           }),
         }
       );
       if (!responsavelResponse.ok)
         throw new Error("Erro ao inserir responsável");
-      const responsavelResult = await responsavelResponse.json();
 
-      // 4. Insere Pagamento
+      // 4. Insert Pagamento
       const pagamentoResponse = await fetch(
-        "http://192.168.1.171:5000/api/insert",
+        `http://${import.meta.env.VITE_BACKENDURL}/api/insert`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          ...requestOptions,
           body: JSON.stringify({
             tableName: "pagamentos",
             data: {
@@ -190,6 +201,7 @@ export default function AlunoForm() {
               responsavel_id: responsavelResult.id,
               status: "pendente",
               juros: 0.0,
+              tipo: pagamento.tipo,
             },
           }),
         }
@@ -198,8 +210,10 @@ export default function AlunoForm() {
 
       alert("Cadastro realizado com sucesso!");
     } catch (error) {
-      console.error("Erro no cadastro:", error);
-      alert(error.message || "Erro ao cadastrar aluno");
+      setError(error.message || "Erro ao cadastrar aluno");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -306,7 +320,7 @@ export default function AlunoForm() {
                     className="uploadButton"
                     disabled={isUploaded}
                   >
-                    {isUploaded ? (<CheckIcon />):(<FileUploadIcon />)}
+                    {isUploaded ? <CheckIcon /> : <FileUploadIcon />}
                   </button>
                 </div>
               </label>
@@ -748,6 +762,25 @@ export default function AlunoForm() {
                 setPagamento({ ...pagamento, valor_uniforme: e.target.value })
               }
             />
+          </label>
+
+          <label>
+            <div className="label-text-container">
+              Tipo<span className="required-asterisk">*</span>
+            </div>
+            <select
+              required
+              value={pagamento.tipo}
+              onChange={(e) =>
+                setPagamento({ ...pagamento, tipo: e.target.value })
+              }
+            >
+              <option value="">Selecione</option>
+              <option value="Pix">Pix</option>
+              <option value="Débito">Débito</option>
+              <option value="Crédito">Crédito</option>
+              <option value="Dinheiro">Dinheiro</option>
+            </select>
           </label>
         </div>
 

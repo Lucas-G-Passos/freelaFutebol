@@ -1,5 +1,7 @@
+// DetailCard.jsx
+
 import React, { useState, useEffect } from "react";
-import { buscarTurmas /*handleGeneratePDF*/ } from "./apiCalls";
+import { buscarTurmas } from "./apiCalls";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -16,8 +18,6 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
   const [formData, setFormData] = useState({});
   const [turmas, setTurmas] = useState([]);
   const [file, setFile] = useState(null);
-
-  // Função para encontrar o nome da turma pelo ID
 
   const ESTADOS = [
     "AC",
@@ -80,8 +80,8 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
         cidade: aluno.cidade ?? "",
         rua: aluno.rua ?? "",
         cep: aluno.cep ?? "",
-        numero: aluno.numero ?? "", // ✅ NOVO
-        grau_parentesco: aluno.grau_parentesco ?? "", // ✅ NOVO
+        numero: aluno.numero ?? "",
+        grau_parentesco: aluno.grau_parentesco ?? "",
         situacao_pagamento: aluno.situacao_pagamento ?? "Adimplente",
         foto: aluno.foto ?? "",
       });
@@ -99,76 +99,87 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
+
   const handleUpload = async () => {
-    if (isUploaded == true) return;
+    if (isUploaded) return;
     try {
-      const formData = new FormData();
-      formData.append("foto", file);
       if (!file) {
         alert("Selecione um arquivo primeiro!");
         return;
       }
-
       if (!file.type.startsWith("image/")) {
         alert("Apenas imagens são permitidas!");
         return;
       }
 
-      const response = await fetch("/api/aluno/insertimage", {
-        method: "POST",
-        body: formData,
-      });
+      const formDataUpload = new FormData();
+      formDataUpload.append("foto", file);
 
-      if (!response.ok) {
+      const response = await fetch(
+        `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/insertimage`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formDataUpload,
+        }
+      );
+
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       const data = await response.json();
-      console.log(data);
-      setFormData({ ...formData, foto: data.fotoUrl });
+      setFormData((prev) => ({ ...prev, foto: data.fotoUrl }));
       setUploaded(true);
     } catch (error) {
       console.error("Erro no upload:", error);
-      // Adicione tratamento de erro para o usuário
       alert("Falha no upload da imagem: " + error.message);
     }
   };
+
   const handleSave = async () => {
     try {
-      const response = await fetch("/api/aluno/update", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          aluno: {
-            id: formData.id,
-            id_turma: formData.id_turma, // Campo adicionado
-            nome_completo: formData.nome_completo,
-            telefone1: formData.telefone1,
-            telefone2: formData.telefone2,
-            rg: formData.rg,
-            cpf: formData.cpf,
-            convenio: formData.convenio,
-            alergia: formData.alergia,
-            uso_medicamento: formData.uso_medicamento,
-            medicamento_horario: formData.medicamento_horario,
-            atestado_medico: formData.atestado_medico,
-            colegio: formData.colegio,
-            colegio_ano: formData.colegio_ano,
-            time_coracao: formData.time_coracao,
-            indicacao: formData.indicacao,
-            observacao: formData.observacao,
-            ativo: formData.ativo,
-            foto: formData.foto,
+      const response = await fetch(
+        `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/update`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          endereco: {
-            id: formData.endereco_id,
-            estado: formData.estado,
-            cidade: formData.cidade,
-            rua: formData.rua,
-            cep: formData.cep,
-          },
-        }),
-      });
+          body: JSON.stringify({
+            aluno: {
+              id: formData.id,
+              id_turma: formData.id_turma,
+              nome_completo: formData.nome_completo,
+              telefone1: formData.telefone1,
+              telefone2: formData.telefone2,
+              rg: formData.rg,
+              cpf: formData.cpf,
+              convenio: formData.convenio,
+              alergia: formData.alergia,
+              uso_medicamento: formData.uso_medicamento,
+              medicamento_horario: formData.medicamento_horario,
+              atestado_medico: formData.atestado_medico,
+              colegio: formData.colegio,
+              colegio_ano: formData.colegio_ano,
+              time_coracao: formData.time_coracao,
+              indicacao: formData.indicacao,
+              observacao: formData.observacao,
+              ativo: formData.ativo,
+              foto: formData.foto,
+            },
+            endereco: {
+              id: formData.endereco_id,
+              estado: formData.estado,
+              cidade: formData.cidade,
+              rua: formData.rua,
+              cep: formData.cep,
+            },
+          }),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -183,17 +194,11 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
       alert("Erro ao atualizar dados");
     }
   };
+
   async function handleGeneratePDF() {
     try {
-      // Monta payload
       const pdfData = {
-        aluno: {
-          ...formData,
-          data_nascimento: formData.data_nascimento,
-          data_matricula: formData.data_matricula,
-          id_turma: formData.id_turma,
-          nome_responsavel: formData.nome,
-        },
+        aluno: { ...formData },
         endereco: {
           estado: formData.estado,
           cidade: formData.cidade,
@@ -209,23 +214,27 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
         },
       };
 
-      const response = await fetch("/api/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pdfData),
-      });
+      const response = await fetch(
+        `http://${import.meta.env.VITE_BACKENDURL}/api/pdf`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(pdfData),
+        }
+      );
 
       if (!response.ok) {
         const err = await response.json();
         throw new Error(`${response.status}: ${err.details}`);
       }
 
-      // Recebe PDF como arrayBuffer
       const buffer = await response.arrayBuffer();
       const blob = new Blob([buffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
-      // Dispara download
       const link = document.createElement("a");
       link.href = url;
       link.download = `ficha_${formData.nome_completo.replace(/\s/g, "_")}.pdf`;
@@ -238,6 +247,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
       alert(`Erro ao gerar PDF: ${error.message}`);
     }
   }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -254,13 +264,11 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
       .slice(0, 11)
       .replace(/^(\d{2})(\d+)/, "($1) $2")
       .replace(/(\d)(\d{4})$/, "$1-$2");
-
   const maskCEP = (v) =>
     v
       .replace(/\D/g, "")
       .slice(0, 8)
       .replace(/(\d{5})(\d{3})$/, "$1-$2");
-
   const maskNumero = (v) => v.replace(/\D/g, "").slice(0, 6);
   return (
     <div className="aluno-overlay">
@@ -315,7 +323,6 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
               <div className="fotoContainerDetail">
                 <img src={aluno.foto} />
                 <div className="inputContainerDetail">
-                  
                   <input
                     type="file"
                     onChange={handleFileChange}

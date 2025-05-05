@@ -61,18 +61,19 @@
 .input-wrapper * {
   height: 60%;
 }
-#filterOptions select {
-  height: auto;
-}
+
 
 #inputField input,
 .turma-select,
 #filterOptions select {
-  font-size: 2.051em;
+  font-size: 1.5em;
   border: none;
   background-color: var(--surface-a20);
   color: var(--light-a0);
   padding: 10px;
+}
+#search{
+  height: 100%;
 }
 
 #inputField input,

@@ -32,7 +32,7 @@
 
 #rootLogin {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: grid;
   background: linear-gradient(
         90deg,
@@ -108,4 +108,13 @@
 
 .input::placeholder {
   color: white;
+}
+
+@media (max-width: 768px) {
+  .input{
+    width: 80%;
+  }
+  .rootLogin{
+    overflow: hidden;
+  }
 }

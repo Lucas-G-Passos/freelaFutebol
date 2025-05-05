@@ -33,28 +33,8 @@ export default function Navbar() {
               Cadastrar
             </div>
           </NavLink>
-          {/* <NavLink to={'/funcionario'} className='navlink'>
-                        <div className='navbutton'>
-                            <EngineeringIcon />
-                            Funcionario
-                        </div>
-                    </NavLink> */}
-          {/* <NavLink to={'/turmas'} className='navlink'>
-                        <div className='navbutton'>
-                            <GroupsIcon />
-                            Turmas
-                        </div>
-                    </NavLink>
-                    <NavLink to={'/filiais'} className='navlink'>
-                        <div className='navbutton'>
-                            <ApartmentIcon />
-                            Filiais
-                        </div>
-                    </NavLink> */}
-        </div>
-
-        <div id="bottom-button-cont">
           <a
+            id="logout-mobile"
             className="navlink"
             onClick={(e) => {
               e.preventDefault();

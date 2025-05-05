@@ -147,9 +147,11 @@
   align-items: center;
   gap: 4px;
   margin-bottom: 4px;
+  overflow: hidden;
 }
 
 .required-asterisk {
+  overflow: hidden;
   color: red;
   font-size: 0.9em;
   line-height: 1;

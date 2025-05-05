@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api", router, routerPDF);
+app.use("/api",verifyJWT, router, routerPDF);
 app.use("/auth", routerLogin);
 
 const PORT = 5000;
