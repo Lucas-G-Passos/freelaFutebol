@@ -10,6 +10,7 @@ import "./components/css/responsive.css";
 import AlunoForm from "./components/aluno/alunoForm";
 
 
+
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Routes>
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")).render(
         <Route element={<Navbar />}>
           <Route path="/aluno" element={<Aluno />} />
           <Route path="/aluno/Form" element={<AlunoForm />} />
+
         </Route>
       </Route>
     </Routes>

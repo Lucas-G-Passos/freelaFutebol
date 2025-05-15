@@ -1,6 +1,5 @@
 import {
   getByField,
-  insertIntoTable,
   getAlunos,
   getEnderecos,
   getPagamentos,

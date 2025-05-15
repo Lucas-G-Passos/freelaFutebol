@@ -1,5 +1,5 @@
 export async function buscarAlunos(field, value) {
-  let url = `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/check`;
+  let url = `${import.meta.env.VITE_BACKENDURL}/api/aluno/check`;
   let method = "POST";
   let body = JSON.stringify({
     field,
@@ -33,7 +33,7 @@ export async function buscarAlunos(field, value) {
 
 export async function buscarTurmas() {
   const response = await fetch(
-    `http://${import.meta.env.VITE_BACKENDURL}/api/turmas`,
+    `${import.meta.env.VITE_BACKENDURL}/api/turmas`,
     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
   );
   const data = await response.json();
@@ -44,7 +44,7 @@ export async function buscarTurmas() {
 export async function getNalunos() {
   try {
     const response = await fetch(
-      `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/total`,
+      `${import.meta.env.VITE_BACKENDURL}/api/aluno/total`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

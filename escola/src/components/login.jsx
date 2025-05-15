@@ -14,12 +14,11 @@ export default function Login() {
 
     try {
       const response = await fetch(
-        `http://${import.meta.env.VITE_BACKENDURL}/auth/login`,
+        `${import.meta.env.VITE_BACKENDURL}/auth/login`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ username, password }),
         }

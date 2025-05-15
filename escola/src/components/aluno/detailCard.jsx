@@ -116,7 +116,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
       formDataUpload.append("foto", file);
 
       const response = await fetch(
-        `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/insertimage`,
+        `${import.meta.env.VITE_BACKENDURL}/api/aluno/insertimage`,
         {
           method: "POST",
           headers: {
@@ -141,7 +141,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
   const handleSave = async () => {
     try {
       const response = await fetch(
-        `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/update`,
+        `${import.meta.env.VITE_BACKENDURL}/api/aluno/update`,
         {
           method: "PUT",
           headers: {
@@ -215,7 +215,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
       };
 
       const response = await fetch(
-        `http://${import.meta.env.VITE_BACKENDURL}/api/pdf`,
+        `${import.meta.env.VITE_BACKENDURL}/api/pdf`,
         {
           method: "POST",
           headers: {

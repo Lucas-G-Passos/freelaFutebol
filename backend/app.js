@@ -33,5 +33,5 @@ app.use("/auth", routerLogin);
 
 const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`http://192.168.1.171:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
