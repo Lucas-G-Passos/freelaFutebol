@@ -1,0 +1,48 @@
+.searchFieldContainer {
+  background-color: var(--surface-a0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30vw;
+  height: 4rem;
+}
+
+.selectFuncionario,
+.funcionarioInput {
+  background-color: var(--surface-a10);
+  height: 2.5rem;
+  padding: 6px;
+  width: 100%;
+  border: solid 1px var(--surface-a30);
+  color: var(--light-a0);
+  transition: all 0.2s ease;
+}
+
+.direita {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-right: none;
+}
+
+.botaoSearchFuncionario {
+  background-color: var(--surface-a10);
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: none;
+  border: 1px solid var(--surface-a30);
+  color: var(--light-a0);
+  border-left: none;
+  padding: 5px;
+  transition: all 0.2s ease;
+  width: 15%;
+}
+
+.botaoSearchFuncionario:hover,
+.selectFuncionario:hover {
+  color: var(--primary-a0);
+  cursor: pointer;
+}

@@ -1,17 +1,3 @@
-/* === VARIABLES === */
-:root {
-  --surface-a0: #1e1e2f;
-  --surface-a10: #2a2a3d;
-  --surface-a20: #33334d;
-  --surface-a30: #40405a;
-  --primary-a20: #6495ed;
-  --primary-a30: #4169e1;
-  --primary-a40: #1e3fbe;
-  --light-a0: #f1f1f1;
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-}
-
 * {
   box-sizing: border-box;
   margin: 0;

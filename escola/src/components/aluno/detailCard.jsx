@@ -126,8 +126,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
         }
       );
 
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) throw new Error(`Error! status: ${response.status}`);
 
       const data = await response.json();
       setFormData((prev) => ({ ...prev, foto: data.fotoUrl }));

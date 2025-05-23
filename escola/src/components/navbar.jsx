@@ -50,8 +50,8 @@ export default function Navbar() {
         </div>
       </div>
       <div style={{ flexGrow: 1, backgroundColor: "var(--surface-a0)" }}>
-        <Outlet />
-      </div>
+          <Outlet />
+        </div>
     </div>
   );
 }

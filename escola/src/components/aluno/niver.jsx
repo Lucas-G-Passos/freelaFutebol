@@ -10,7 +10,7 @@ export default function Niver() {
     async function fetchAniversariantes() {
       try {
         const response = await fetch(
-          `http://${import.meta.env.VITE_BACKENDURL}/api/aluno/aniversariantes`,
+          `${import.meta.env.VITE_BACKENDURL}/api/aluno/aniversariantes`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

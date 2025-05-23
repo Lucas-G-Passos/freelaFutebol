@@ -8,6 +8,7 @@ import Aluno from "./components/aluno/aluno";
 import "./components/css/variables.css";
 import "./components/css/responsive.css";
 import AlunoForm from "./components/aluno/alunoForm";
+import Funcionario from "./components/funcionario/funcionario";
 
 
 
@@ -19,7 +20,7 @@ createRoot(document.getElementById("root")).render(
         <Route element={<Navbar />}>
           <Route path="/aluno" element={<Aluno />} />
           <Route path="/aluno/Form" element={<AlunoForm />} />
-
+          <Route path="/funcionario" element={<Funcionario />}></Route>
         </Route>
       </Route>
     </Routes>

@@ -11,7 +11,13 @@ import {
   getNAlunos,
   updateInTable,
   getAniversariantes,
+  getFiliais,
 } from "./functions/functions.js";
+
+import {
+  getNFuncionarios,
+  getFuncionarios,
+} from "./functions/functionFuncionario.js";
 import express from "express";
 import multer from "multer";
 import uploadImage from "./../imgKit.js";
@@ -111,6 +117,15 @@ router.get("/turmas", async (req, res) => {
     res.status(500).json({ error: "Query falha" });
   }
 });
+router.get("/filial", async (req, res) => {
+  try {
+    const filial = await getFiliais();
+    res.json(filial || { message: "no filial" });
+  } catch (error) {
+    console.error("error getting filial:", error);
+    res.status(500).json({ error: "Query falha" });
+  }
+});
 
 router.get("/aluno/total", async (req, res) => {
   try {
@@ -123,6 +138,20 @@ router.get("/aluno/total", async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch student count",
+    });
+  }
+});
+router.get("/funcionario/total", async (req, res) => {
+  try {
+    const total = await getNFuncionarios();
+    res.json({
+      total: total || 0,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get funcionario count",
     });
   }
 });
@@ -166,6 +195,15 @@ router.post("/aluno/check", async (req, res) => {
   } catch (error) {
     console.error("Error fetching aluno:", error);
     res.status(500).json({ error: "Falha na busca" });
+  }
+});
+router.post("/funcionario/check", async (req, res) => {
+  const { field, value } = req.body;
+  try {
+    const funcionario = await getFuncionarios(field, value);
+    res.json(funcionario || { message: "Funcionario não encontrado" });
+  } catch (error) {
+    console.error("error fetching funcionario: ", error);
   }
 });
 
@@ -252,6 +290,96 @@ router.post("/insert", async (req, res) => {
     res.status(error.code === "MISSING_FIELD" ? 400 : 500).json(response);
   } finally {
     conn.release();
+  }
+});
+router.post("/funcionario/update", async (req, res) => {
+  const { funcionario, endereco } = req.body;
+  console.log(funcionario, endereco);
+  const c = await db.getConnection();
+  try {
+    await c.beginTransaction();
+
+    await c.query(
+      `UPDATE endereco 
+   SET cep = ?, cidade = ?, estado = ?, rua = ?, numero = ? 
+   WHERE id = ?`,
+      [
+        endereco.cep,
+        endereco.cidade,
+        endereco.estado,
+        endereco.rua,
+        endereco.numero,
+        endereco.id,
+      ]
+    );
+
+    const [altera] = await c.query(
+      `UPDATE funcionarios 
+       SET
+           cargo = ?,
+           telefone1 = ?, 
+           telefone2 = ?, 
+           foto = ?, 
+           jornada_escala = ?, 
+           situacao = ?
+       WHERE id = ?`,
+      [
+        funcionario.cargo,
+        funcionario.telefone1,
+        funcionario.telefone2,
+        funcionario.foto,
+        funcionario.jornada_escala,
+        funcionario.situacao,
+        funcionario.id,
+      ]
+    );
+    console.log("Update funcionarios");
+    console.log(altera.affectedRows);
+    console.log(endereco.cep);
+    console.log(endereco.cidade);
+    console.log(endereco.estado);
+    console.log(endereco.rua);
+    console.log(endereco.numero);
+    console.log(endereco.id);
+
+    const [rows] = await c.query(
+      `SELECT 
+      f.id,
+      f.nome_completo,
+      f.data_nascimento,
+      f.telefone1,
+      f.telefone2,
+      f.cargo,
+      f.rg,
+      f.cpf,
+      f.data_admissao,
+      f.foto,
+      f.jornada_escala,
+      f.situacao,
+      fil.nome AS filial_nome,
+      func_endereco.cep,
+      func_endereco.cidade,
+      func_endereco.estado,
+      func_endereco.rua,
+      func_endereco.numero AS numero_rua,
+      func_endereco.id AS endereco_id
+    FROM 
+      funcionarios f
+    LEFT JOIN filial fil 
+      ON f.id_filial = fil.id
+    LEFT JOIN endereco func_endereco 
+      ON f.id_endereco = func_endereco.id
+    WHERE f.id = ?`,
+      [funcionario.id]
+    );
+    await c.commit();
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    await c.rollback();
+    res.status(500).json({ error: "Erro interno ao atualizar funcionário" });
+    console.error("Erro ao atualizar funcionario: ", error);
+  } finally {
+    c.release();
   }
 });
 router.put("/aluno/update", async (req, res) => {

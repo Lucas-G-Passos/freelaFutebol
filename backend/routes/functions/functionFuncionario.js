@@ -9,53 +9,58 @@ async function getNFuncionarios() {
     throw error;
   }
 }
-async function getFuncionarios(field, value) {
+async function getFuncionarios(filters) {
   try {
+    const fieldMap = {
+      nome_completo: "nome_completo",
+      filial: "id_filial",
+    };
+
+    const [field, value] = Object.entries(filters)[0];
+    const dbField = fieldMap[field];
+
     let query = `SELECT 
-    f.id,
-    f.nome_completo,
-    f.data_nascimento,
-    f.telefone1,
-    f.telefone2,
-    f.cargo,
-    f.rg,
-    f.cpf,
-    f.data_admissao,
-    f.foto,
-    f.jornada_escala,
-    f.situacao,
-    fil.nome AS filial_nome,
-    func_endereco.cep,
-    func_endereco.cidade,
-    func_endereco.estado,
-    func_endereco.rua,
-    func_endereco.numero as numero_rua
-FROM 
-    funcionarios f
-LEFT JOIN 
-    filial fil ON f.id_filial = fil.id
-LEFT JOIN 
-    endereco func_endereco ON f.id_endereco = func_endereco.id
-LEFT JOIN 
-    endereco fil_endereco ON fil.id_endereco = fil_endereco.id;
-    WHERE f.${field} COLLATE utf8mb4_unicode_ci LIKE ?
-    `;
-    
+      f.id,
+      f.nome_completo,
+      f.data_nascimento,
+      f.telefone1,
+      f.telefone2,
+      f.cargo,
+      f.rg,
+      f.cpf,
+      f.data_admissao,
+      f.foto,
+      f.jornada_escala,
+      f.situacao,
+      fil.nome AS filial_nome,
+      func_endereco.cep,
+      func_endereco.cidade,
+      func_endereco.estado,
+      func_endereco.rua,
+      func_endereco.numero AS numero_rua,
+      func_endereco.id AS endereco_id
+    FROM 
+      funcionarios f
+    LEFT JOIN filial fil 
+      ON f.id_filial = fil.id
+    LEFT JOIN endereco func_endereco 
+      ON f.id_endereco = func_endereco.id
+    WHERE f.${dbField} COLLATE utf8mb4_unicode_ci `;
+
     let params = [`%${value}%`];
-    if([/* Insert here */].includes(field)){
-        query = query.replace("LIKE ?","= ?");
-        params = [value];
+
+    if (field === "filial") {
+      query += "= ?";
+      params = [value];
+    } else {
+      query += "LIKE ?";
     }
 
-    const [rows] = await db.query(query);
+    const [rows] = await db.query(query, params);
     return rows.length > 0 ? rows : null;
   } catch (error) {
-    console.error("Falha ao procurar Funcionarios. Erro:" + error);
+    console.error("Falha ao procurar Funcionarios. Erro:", error);
     throw error;
   }
 }
-
-export default {
-    getNFuncionarios,
-    getFuncionarios
-}
+export { getNFuncionarios, getFuncionarios};
