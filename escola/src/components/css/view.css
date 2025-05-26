@@ -1,0 +1,38 @@
+.dragViewRoot {
+  width: 100vw;
+  height: 100vh;
+  --dot-bg: var(--surface-a10);
+  --dot-color: #cfc64aa1;
+  --dot-size: 1px;
+  --dot-space: 50px;
+  background: linear-gradient(
+        90deg,
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    linear-gradient(
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    var(--dot-color);
+}
+.draggableCard {
+  border: 1px solid var(--surface-a30);
+  background-color: var(--surface-a20);
+  color: var(--light-a0);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 8px;
+  width: 8vw;
+  height: 8vh;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  user-select: none;
+}
+
+

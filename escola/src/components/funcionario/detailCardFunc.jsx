@@ -80,6 +80,43 @@ export default function FuncionarioDetailsCard({ data, onClose, onUpdate }) {
     setFormattedData((prev) => ({ ...prev, [name]: v }));
   };
 
+  const handleUpload = async () => {
+    if (isUploaded) return;
+    try {
+      if (!file) {
+        alert("Selecione um arquivo primeiro!");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        alert("Apenas imagens são permitidas!");
+        return;
+      }
+
+      const formDataUpload = new FormData();
+      formDataUpload.append("foto", file);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKENDURL}/api/funcionario/insertImage`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formDataUpload,
+        }
+      );
+
+      if (!response.ok) throw new Error(`Error! status: ${response.status}`);
+
+      const data = await response.json();
+      setFormattedData((prev) => ({ ...prev, foto: data.fotoUrl }));
+      setUploaded(true);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      alert("Falha no upload da imagem: " + error.message);
+    }
+  };
+
   const maskTel = (v) =>
     v
       .replace(/\D/g, "")
@@ -198,18 +235,18 @@ export default function FuncionarioDetailsCard({ data, onClose, onUpdate }) {
             {isEditing ? (
               <div>
                 <div className="fotoContainerDetail">
-                  <p>Imagem antiga:</p>
+                  <p>Imagem :</p>
                   <img src={formattedData.foto} />
                 </div>
                 <div className="inputContainerDetail">
                   <input
                     type="file"
-                    onChange={null}
+                    onChange={handleFileChange}
                     accept="image/png, image/jpeg"
                   />
                   <button
                     type="button"
-                    onClick={null}
+                    onClick={handleUpload}
                     className="uploadButton"
                     disabled={isUploaded}
                   >

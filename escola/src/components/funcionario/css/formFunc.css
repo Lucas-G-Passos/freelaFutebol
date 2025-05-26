@@ -1,0 +1,27 @@
+.funcionarioFormRoot {
+  --dot-bg: var(--surface-a0);
+  --dot-color: var(--primary-a40);
+  --dot-size: 2px;
+  --dot-space: 50px;
+  background: linear-gradient(
+        90deg,
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    linear-gradient(
+        var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+        transparent 1%
+      )
+      center / var(--dot-space) var(--dot-space),
+    var(--dot-color);
+  font-family: "Space Grotesk";
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem;
+  height: auto;
+  overflow: auto;
+  flex-direction: column;
+}

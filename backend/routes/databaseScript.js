@@ -17,6 +17,7 @@ import {
 import {
   getNFuncionarios,
   getFuncionarios,
+  getAllFuncionario,
 } from "./functions/functionFuncionario.js";
 import express from "express";
 import multer from "multer";
@@ -206,6 +207,15 @@ router.post("/funcionario/check", async (req, res) => {
     console.error("error fetching funcionario: ", error);
   }
 });
+router.get("/funcionario", async (req, res) => {
+  try {
+    const funcionario = await getAllFuncionario();
+    res.json(funcionario || { message: "Funcionario não encontrado" });
+  } catch (error) {
+    console.error("error fetching funcionario: ", error);
+    throw new Error("Erro ao buscar funcionario: ", error);
+  }
+});
 
 router.post("/insert", async (req, res) => {
   const { tableName, data } = req.body;
@@ -313,7 +323,7 @@ router.post("/funcionario/update", async (req, res) => {
       ]
     );
 
-    const [altera] = await c.query(
+    await c.query(
       `UPDATE funcionarios 
        SET
            cargo = ?,
@@ -333,14 +343,6 @@ router.post("/funcionario/update", async (req, res) => {
         funcionario.id,
       ]
     );
-    console.log("Update funcionarios");
-    console.log(altera.affectedRows);
-    console.log(endereco.cep);
-    console.log(endereco.cidade);
-    console.log(endereco.estado);
-    console.log(endereco.rua);
-    console.log(endereco.numero);
-    console.log(endereco.id);
 
     const [rows] = await c.query(
       `SELECT 
@@ -490,6 +492,24 @@ router.put("/aluno/update", async (req, res) => {
 });
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+router.post(
+  "/funcionario/insertImage",
+  upload.single("foto"),
+  async (req, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ error: "Nenhuma imagem enviada" });
+      }
+      const fotoUrl = await uploadImage(file);
+      res.json({ fotoUrl });
+    } catch (error) {
+      console.error("Erro no upload da imagem: ", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
   try {

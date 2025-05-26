@@ -1,0 +1,33 @@
+.contextMenu {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  background-color: var(--surface-a10);
+  border: 1px solid var(--surface-a20);
+  border-radius: 10px;
+  flex-direction: column;
+  transform: translate(-50%, 0);
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+.contextItem {
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  width: 7vw;
+  height: 3vh;
+  background-color: var(--surface-a10);
+  border: 1px solid var(--surface-a20);
+  color: white;
+  padding: 4px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  transition: all 0.2s ease-in-out;
+}
+
+.contextItem:hover{
+    border: 1px solid var(--primary-a0);
+    cursor: pointer;
+}

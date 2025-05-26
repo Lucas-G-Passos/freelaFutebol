@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 import "./css/results.css";
 
 export default function Results({ f, card }) {

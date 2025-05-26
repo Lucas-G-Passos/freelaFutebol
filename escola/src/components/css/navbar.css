@@ -21,6 +21,7 @@
   padding: 15px;
   border-right: 1px solid var(--surface-a50);
   font-weight: 500;
+  z-index: 999;
 }
 
 /* Top navigation button group */

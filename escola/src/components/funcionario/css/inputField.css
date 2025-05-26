@@ -5,6 +5,7 @@
   align-items: center;
   width: 30vw;
   height: 4rem;
+  min-width: 330px;
 }
 
 .selectFuncionario,

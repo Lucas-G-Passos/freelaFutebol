@@ -33,7 +33,8 @@ export default function Login() {
         setError(data.message);
       }
     } catch (err) {
-      setError("Erro ao tentar fazer login.");
+      setError("Erro ao tentar fazer login. Tente novamente.");
+      console.error("Login error:", err);
     }
   }
 

@@ -1,11 +1,8 @@
 import "./css/navbar.css";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
-import EngineeringIcon from "@mui/icons-material/Engineering";
 import LogoutIcon from "@mui/icons-material/Logout";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import ApartmentIcon from "@mui/icons-material/Apartment";
-import GroupsIcon from "@mui/icons-material/Groups";
+import React from "react";
 import CreateIcon from "@mui/icons-material/Create";
 
 export default function Navbar() {
@@ -50,8 +47,8 @@ export default function Navbar() {
         </div>
       </div>
       <div style={{ flexGrow: 1, backgroundColor: "var(--surface-a0)" }}>
-          <Outlet />
-        </div>
+        <Outlet />
+      </div>
     </div>
   );
 }

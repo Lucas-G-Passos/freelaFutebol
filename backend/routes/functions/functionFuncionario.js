@@ -63,4 +63,41 @@ async function getFuncionarios(filters) {
     throw error;
   }
 }
-export { getNFuncionarios, getFuncionarios};
+
+async function getAllFuncionario() {
+  try {
+    const query = `SELECT 
+      f.id,
+      f.nome_completo,
+      f.data_nascimento,
+      f.telefone1,
+      f.telefone2,
+      f.cargo,
+      f.rg,
+      f.cpf,
+      f.data_admissao,
+      f.foto,
+      f.jornada_escala,
+      f.situacao,
+      fil.nome AS filial_nome,
+      func_endereco.cep,
+      func_endereco.cidade,
+      func_endereco.estado,
+      func_endereco.rua,
+      func_endereco.numero AS numero_rua,
+      func_endereco.id AS endereco_id
+    FROM 
+      funcionarios f
+    LEFT JOIN filial fil 
+      ON f.id_filial = fil.id
+    LEFT JOIN endereco func_endereco 
+      ON f.id_endereco = func_endereco.id
+     `;
+    const [rows] = await db.query(query);
+    return rows.length > 0 ? rows : null;
+  } catch (error) {
+    console.error("Falha ao procurar Funcionarios. Erro:", error);
+    throw error;
+  }
+}
+export { getNFuncionarios, getFuncionarios, getAllFuncionario };
