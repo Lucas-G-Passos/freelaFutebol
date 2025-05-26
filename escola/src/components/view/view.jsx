@@ -4,6 +4,7 @@ import DraggableCard from "./dragCard";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import "./css/view.css";
 import ContextMenu from "./contextMenu";
+import DetailContext from "./contextDetail";
 
 export default function DragView() {
   const [filial, setFilial] = useState([]);
@@ -13,6 +14,11 @@ export default function DragView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [positions, setPosition] = useState();
+  const [detailCard, setDetailCard] = useState({
+    show: false,
+    type: null,
+    data: null,
+  });
   const [contextMenu, setContextMenu] = useState({
     show: false,
     x: 0,
@@ -113,6 +119,10 @@ export default function DragView() {
     setPosition((prev) => ({ ...prev, [id]: snap }));
   };
 
+  const handleDetailCard = (e, type, data) => {
+    setDetailCard({ show: true, type, data });
+  };
+
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
@@ -139,7 +149,11 @@ export default function DragView() {
             id={contextMenu.id}
             type={contextMenu.type}
             data={contextMenu.data}
+            showDetail={(e) => handleDetailCard(e, contextMenu.type, contextMenu.data)}
           />
+        )}
+        {detailCard.show && (
+          <DetailContext type={detailCard.type} data={detailCard.data} />
         )}
       </div>
     </DndContext>

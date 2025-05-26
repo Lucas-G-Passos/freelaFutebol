@@ -10,7 +10,7 @@ import AlunoForm from "./components/aluno/alunoForm";
 import Funcionario from "./components/funcionario/funcionario";
 import FuncionarioForm from "./components/funcionario/funcionarioForm";
 import React from "react";
-import DragView from "./components/view";
+import DragView from "./components/view/view";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>

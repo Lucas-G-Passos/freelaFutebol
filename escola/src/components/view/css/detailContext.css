@@ -1,0 +1,42 @@
+.detailContextOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 801;
+  overflow-y: auto;
+  padding: 2rem 0;
+}
+.detailContextCard {
+  overflow-x: auto;
+  background-color: var(--surface-a0);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 802;
+  position: relative;
+  gap: 1.5rem;
+  overflow-y: auto;
+  padding-top: 4rem;
+  padding-bottom: 2rem;
+  border: 1px solid var(--surface-a20);
+}
+.detailContextCardHeader {
+  display: flex;
+  justify-content: space-between;
+}
+.detailContextCardHeader h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  flex: 1;
+  color: var(--text-primary);
+  text-align: left;
+}
