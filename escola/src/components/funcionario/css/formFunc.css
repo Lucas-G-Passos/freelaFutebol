@@ -25,3 +25,20 @@
   overflow: auto;
   flex-direction: column;
 }
+
+.funcionarioSection .formColumnContainer {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.funcionarioSection {
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.funcionarioSection label {
+  width: 100%;
+}
+.formRoot{
+  width: 50%;
+}

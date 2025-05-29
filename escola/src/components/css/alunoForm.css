@@ -25,6 +25,7 @@
   padding: 2rem; /* Add padding instead of fixed height */
   height: auto;
   overflow: auto;
+  flex-direction: column;
 }
 
 .formRoot {
@@ -40,7 +41,7 @@
   border: 1px solid var(--surface-a30);
   color: var(--light-a0);
   margin: 2rem auto;
-  border-radius:10px ;
+  border-radius: 10px;
 }
 .formSection {
   display: flex;
@@ -68,6 +69,21 @@
   display: flex;
   flex-direction: column;
 }
+.formSection .cep {
+  gap: 3px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.formSection .cep button {
+  width: 10%;
+  background-color: var(--surface-a10);
+  box-shadow: none;
+  border: 1px solid var(--surface-a30);
+  border-radius: 10px;
+  align-self: center;
+  color: var(--primary-a20);
+}
 .formColumn {
   flex: 1;
   min-width: 300px;
@@ -90,6 +106,7 @@
   box-shadow: none;
   border: 1px solid var(--surface-a30);
   color: var(--light-a0);
+  width: 100%;
 }
 .formSection textarea {
   background-color: var(--surface-a10);
@@ -121,25 +138,28 @@
   line-height: 1;
 }
 .formFooter {
-  margin-top: 2rem;
+  margin-top: 1rem;
   text-align: center;
   padding: 20px;
 }
 
 .formFooter button {
-  background: #4caf50;
-  color: white;
-  padding: 14px 28px;
-  border: none;
-  border-radius: 4px;
+  background-color: var(--surface-a10);
+  border: var(--surface-a20) 1px solid;
+  color: var(--primary-a20);
+  border-radius:10px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.4em;
   font-weight: bold;
-  transition: background-color 0.3s;
+  transition: all 0.2s ease-in-out;
+  padding: 1em;
 }
 
+.formFooter button:disabled{
+  color: var(--surface-a10);
+}
 .formFooter button:hover {
-  background: #45a049;
+  border: 5px solid var(--primary-a20);
 }
 
 .label-text-container {
@@ -156,25 +176,24 @@
   font-size: 0.9em;
   line-height: 1;
 }
-.uploadButton{
+.uploadButton {
   width: 10%;
   background-color: var(--surface-a10);
   box-shadow: none;
   border: none;
 }
 
-.fotoContainer{
+.fotoContainer {
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
 }
-.fotoContainer input{
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+.fotoContainer input {
+  border-radius: 10px;
   width: 80%;
 }
-.fotoContainer button{
+.fotoContainer button {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border: 1px solid var(--surface-a30);
@@ -182,7 +201,14 @@
   color: var(--primary-a20);
   transition: all 0.2s ease;
 }
-.fotoContainer button:hover{
+.fotoContainer button:hover {
   color: var(--primary-a50);
   cursor: pointer;
+}
+.error-message {
+  background-color: var(--surface-a10);
+  border: 1px red solid;
+  color: white;
+  border-radius: 10px;
+  padding: 2rem;
 }

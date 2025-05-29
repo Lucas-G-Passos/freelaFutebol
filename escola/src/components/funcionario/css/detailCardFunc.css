@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 8;
+  z-index: 810;
   overflow-y: auto;
   padding: 2rem 0;
 }
@@ -23,13 +23,14 @@
   max-height: 90vh;
   width: 90%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  z-index: 9;
+  z-index: 812;
   position: relative;
   gap: 1.5rem;
   overflow-y: auto;
   padding-top: 4rem;
   padding-bottom: 2rem;
   border: 1px solid var(--surface-a20);
+  color: white;
 }
 .funcionarioCardHeader h2 {
   font-size: 1.5rem;
@@ -52,8 +53,8 @@
   max-width: 100%;
 }
 
-.fotoDetailSection img {
-  max-width: 100%;
+.funcionarioCard img {
+  max-width: 85%;
   height: auto;
   display: block;
   border-radius: 0.5rem;

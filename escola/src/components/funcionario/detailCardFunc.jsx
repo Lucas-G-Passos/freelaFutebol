@@ -209,9 +209,6 @@ export default function FuncionarioDetailsCard({ data, onClose, onUpdate }) {
                 </button>
               </div>
             )}
-            <button onClick={null} className="pdfButton">
-              <PictureAsPdfIcon />
-            </button>
             <button
               onClick={() => {
                 if (isEditing == true) {

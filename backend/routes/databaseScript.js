@@ -21,7 +21,7 @@ import {
 } from "./functions/functionFuncionario.js";
 import express from "express";
 import multer from "multer";
-import uploadImage from "./../imgKit.js";
+import { uploadImage, uploadAtestado, uploadImageFuncionario } from "./../imgKit.js";
 import db from "../db.js";
 const router = express.Router();
 
@@ -219,57 +219,37 @@ router.get("/funcionario", async (req, res) => {
 
 router.post("/insert", async (req, res) => {
   const { tableName, data } = req.body;
-  console.log("Recebendo dados para inserção:", req.body);
+  let conn;
 
-  const conn = await db.getConnection();
   try {
+    conn = await db.getConnection();
     await conn.beginTransaction();
 
-    // Validações específicas por tabela
     switch (tableName) {
       case "endereco":
-        if (data.cep) {
-          const cepRaw = data.cep.replace(/-/g, "");
-          if (!/^\d{8}$/.test(cepRaw)) {
-            throw {
-              code: "INVALID_CEP",
-              message: "CEP deve conter 8 dígitos numéricos",
-              field: "cep",
-            };
-          }
-          data.cep = cepRaw;
+        if (!data.estado || data.estado.length !== 2) {
+          throw {
+            code: "INVALID_STATE",
+            message: "Estado é obrigatório (2 caracteres)",
+            field: "estado",
+          };
         }
         break;
 
       case "alunos":
-        if (!data.nome_completo) {
+        if (!data.id_endereco) {
           throw {
             code: "MISSING_FIELD",
-            message: "Nome completo é obrigatório",
-            field: "nome_completo",
-          };
-        }
-        // Adicionar outras validações específicas do aluno
-        break;
-
-      case "responsaveis":
-        if (!data.grau_parentesco) {
-          throw {
-            code: "MISSING_FIELD",
-            message: "Grau de parentesco é obrigatório",
-            field: "grau_parentesco",
+            message: "ID do endereço é obrigatório",
+            field: "id_endereco",
           };
         }
         break;
     }
 
-    // Executa a inserção
     const [result] = await conn.query(`INSERT INTO ${tableName} SET ?`, [data]);
-
-    // Commit da transação
     await conn.commit();
 
-    // Busca o registro recém-inserido
     const [newRecord] = await conn.query(
       `SELECT * FROM ${tableName} WHERE id = ?`,
       [result.insertId]
@@ -281,25 +261,25 @@ router.post("/insert", async (req, res) => {
       message: `${tableName} inserido com sucesso`,
     });
   } catch (error) {
-    await conn.rollback();
+    if (conn) await conn.rollback();
     console.error(`Erro na inserção (${tableName}):`, error);
 
-    // Mapeamento de erros conhecidos
     const response = {
+      success: false,
       error: error.code || "DATABASE_ERROR",
       message: error.message || "Erro no banco de dados",
       field: error.field || null,
     };
 
-    // Tratamento específico para códigos de erro do MySQL
-    if (error.code === "ER_DATA_TOO_LONG") {
-      response.message = "Dados excedem o tamanho permitido";
-      response.field = error.sqlMessage.match(/column '(.+)'/i)?.[1];
+    if (error.code === "ER_NO_DEFAULT_FOR_FIELD") {
+      response.message = `Campo obrigatório faltando: ${
+        error.sqlMessage.match(/Field '(.+)'/i)?.[1]
+      }`;
     }
 
-    res.status(error.code === "MISSING_FIELD" ? 400 : 500).json(response);
+    res.status(400).json(response);
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
 router.post("/funcionario/update", async (req, res) => {
@@ -502,7 +482,7 @@ router.post(
       if (!file) {
         return res.status(400).json({ error: "Nenhuma imagem enviada" });
       }
-      const fotoUrl = await uploadImage(file);
+      const fotoUrl = await uploadImageFuncionario(file);
       res.json({ fotoUrl });
     } catch (error) {
       console.error("Erro no upload da imagem: ", error);
@@ -518,13 +498,31 @@ router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
       return res.status(400).json({ error: "Nenhuma imagem enviada" });
     }
 
-    const fotoUrl = await uploadImage(file); // Usando o serviço que criamos anteriormente
+    const fotoUrl = await uploadImage(file);
     res.json({ fotoUrl });
   } catch (error) {
     console.error("Erro no upload da imagem:", error);
     res.status(500).json({ error: error.message });
   }
 });
+router.post(
+  "/aluno/insert/atestados",
+  upload.single("foto"),
+  async (req, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ error: "Nenhuma imagem enviada" });
+      }
+
+      const fotoUrl = await uploadAtestado(file);
+      res.json({ fotoUrl });
+    } catch (error) {
+      console.error("Erro no upload da imagem:", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 router.get("/aluno/aniversariantes", async (req, res) => {
   try {

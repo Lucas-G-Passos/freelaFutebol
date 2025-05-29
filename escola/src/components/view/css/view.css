@@ -17,6 +17,7 @@
       )
       center / var(--dot-space) var(--dot-space),
     var(--dot-color);
+    overflow: hidden;
 }
 .draggableCard {
   border: 1px solid var(--surface-a30);

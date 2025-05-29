@@ -41,7 +41,6 @@ export default function Funcionario() {
       </div>
       {searched === 1 ? <Results f={func} card={setDetailCard} /> : null}
       <FuncionarioDetailsCard data={detail} onClose={setDetailCard} />
-      {console.log(detail)}
     </div>
   );
 }

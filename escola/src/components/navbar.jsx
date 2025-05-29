@@ -16,13 +16,25 @@ export default function Navbar() {
           <NavLink to={"/aluno"} className="navlink">
             <div className="navbutton">
               <PeopleIcon />
-              Consultar
+              Consultar Aluno
+            </div>
+          </NavLink>
+          <NavLink to={"/funcionario"} className="navlink">
+            <div className="navbutton">
+              <PeopleIcon />
+              Consultar Funcionários
             </div>
           </NavLink>
           <NavLink to={"/aluno/form"} className="navlink">
             <div className="navbutton">
               <CreateIcon />
-              Cadastrar
+              Cadastrar Aluno
+            </div>
+          </NavLink>
+          <NavLink to={"/funcionario/form"} className="navlink">
+            <div className="navbutton">
+              <CreateIcon />
+              Cadastrar Func.
             </div>
           </NavLink>
           <a

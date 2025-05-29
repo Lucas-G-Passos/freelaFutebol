@@ -4,7 +4,9 @@ import DraggableCard from "./dragCard";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import "./css/view.css";
 import ContextMenu from "./contextMenu";
-import DetailContext from "./contextDetail";
+import FilialDetailCard from "./filialDetailCard";
+import FuncionarioDetailsCard from "../funcionario/detailCardFunc";
+import DetailsCard from "../aluno/detailCard";
 
 export default function DragView() {
   const [filial, setFilial] = useState([]);
@@ -122,13 +124,19 @@ export default function DragView() {
   const handleDetailCard = (e, type, data) => {
     setDetailCard({ show: true, type, data });
   };
+  const handleCloseDetailCard = () => {
+    setDetailCard({ show: false, type: null, data: null });
+  };
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <DndContext>
-      <div className="dragViewRoot" onContextMenu={null}>
+      <div
+        className="dragViewRoot"
+        onContextMenu={(e) => handleCardClick(e, 1, "default", null)}
+      >
         {filial.map((f) => (
           <DraggableCard
             key={f.filial_id}
@@ -149,11 +157,26 @@ export default function DragView() {
             id={contextMenu.id}
             type={contextMenu.type}
             data={contextMenu.data}
-            showDetail={(e) => handleDetailCard(e, contextMenu.type, contextMenu.data)}
+            showDetail={(e) =>
+              handleDetailCard(e, contextMenu.type, contextMenu.data)
+            }
           />
         )}
-        {detailCard.show && (
-          <DetailContext type={detailCard.type} data={detailCard.data} />
+        {detailCard.show && detailCard.type === "filial" && (
+          <FilialDetailCard
+            type={detailCard.type}
+            data={detailCard.data}
+            onClose={handleCloseDetailCard}
+          />
+        )}
+        {detailCard.show && detailCard.type === "funcionario" && (
+          <FuncionarioDetailsCard
+            data={detailCard.data}
+            onClose={handleCloseDetailCard}
+          />
+        )}
+        {detailCard.show && detailCard.type === "aluno" && (
+          <DetailsCard data={detailCard.data} />
         )}
       </div>
     </DndContext>

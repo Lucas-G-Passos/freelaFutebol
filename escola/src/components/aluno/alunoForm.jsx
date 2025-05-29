@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import "./../css/alunoForm.css";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CheckIcon from "@mui/icons-material/Check";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 
 export default function AlunoForm() {
   const [turmas, setTurmas] = useState([]);
   const [file, setFile] = useState(null);
+  const [atestadoFile, setAtestadoFile] = useState(null);
   const [isUploaded, setUploaded] = useState(false);
+  const [isAtestadoUploaded, setAtestadoUploaded] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // State declarations remain unchanged
   const [aluno, setAluno] = useState({
     nome_completo: "",
     data_nascimento: "",
@@ -20,9 +22,9 @@ export default function AlunoForm() {
     foto: "",
     rg: "",
     cpf: "",
-    convenio: "",
-    alergia: "",
-    uso_medicamento: "",
+    convenio: "Nenhum",
+    alergia: "Nenhuma",
+    uso_medicamento: "Nenhum",
     medicamento_horario: "",
     atestado_medico: "",
     colegio: "",
@@ -81,6 +83,9 @@ export default function AlunoForm() {
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
+  const handleAtestadoFile = (e) => {
+    setAtestadoFile(e.target.files[0]);
+  };
 
   const handleUpload = async () => {
     if (isUploaded) return;
@@ -109,11 +114,47 @@ export default function AlunoForm() {
         }
       );
 
-      if (!response.ok)
-        throw new Error(`Error! status: ${response.status}`);
+      if (!response.ok) throw new Error(`Error! status: ${response.status}`);
       const data = await response.json();
       setAluno({ ...aluno, foto: data.fotoUrl });
       setUploaded(true);
+    } catch (error) {
+      setError("Falha no upload da imagem: " + error.message);
+      console.error(error);
+    }
+  };
+
+  const handleAtestado = async () => {
+    if (isAtestadoUploaded) return;
+    try {
+      const formData = new FormData();
+      formData.append("foto", atestadoFile);
+
+      if (!atestadoFile) {
+        alert("Selecione um arquivo primeiro!");
+        return;
+      }
+
+      if (!atestadoFile.type.startsWith("image/")) {
+        alert("Apenas imagens são permitidas!");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKENDURL}/api/aluno/insert/atestados`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) throw new Error(`Error! status: ${response.status}`);
+      const data = await response.json();
+      setAluno({ ...aluno, atestado_medico: data.fotoUrl });
+      setAtestadoUploaded(true);
     } catch (error) {
       setError("Falha no upload da imagem: " + error.message);
       console.error(error);
@@ -127,7 +168,38 @@ export default function AlunoForm() {
       .replace(/^(\d{5})(\d{3})$/, "$1-$2");
     setEndereco((prev) => ({ ...prev, cep: value }));
   };
+  const getAddByCep = async (cep) => {
+    try {
+      const cleanedCEP = cep.replace(/\D/g, "");
+      const url = `https://viacep.com.br/ws/${cleanedCEP}/json/?_=${Date.now()}`;
 
+      const response = await fetch(url, {
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("CEP não encontrado");
+
+      const data = await response.json();
+
+      if (data.erro) {
+        throw new Error("CEP não encontrado");
+      }
+
+      setEndereco((prev) => ({
+        ...prev,
+        rua: data.logradouro || prev.rua,
+        cidade: data.localidade || prev.cidade,
+        estado: data.uf || prev.estado,
+      }));
+    } catch (error) {
+      console.error("Erro ao buscar CEP:", error);
+      setError(
+        "Não foi possível buscar o endereço. Verifique o CEP e tente novamente."
+      );
+    }
+  };
   const handleNumeroChange = (e) => {
     const value = e.target.value.replace(/\D/g, "").slice(0, 6);
     setEndereco((prev) => ({ ...prev, numero: value }));
@@ -147,6 +219,23 @@ export default function AlunoForm() {
     };
 
     try {
+      // Validação de campos obrigatórios
+      const requiredFields = {
+        endereco: ["cep", "cidade", "estado", "rua", "numero"],
+        responsavel: ["nome", "rg", "cpf", "grau_parentesco"],
+        pagamento: ["data_vencimento", "valor_mensalidade", "tipo"],
+      };
+
+      Object.entries(requiredFields).forEach(([section, fields]) => {
+        fields.forEach((field) => {
+          if (!eval(section)[field]) {
+            throw new Error(
+              `Campo obrigatório faltando: ${field} (${section})`
+            );
+          }
+        });
+      });
+
       // 1. Insert Endereço
       const enderecoResponse = await fetch(
         `${import.meta.env.VITE_BACKENDURL}/api/insert`,
@@ -158,7 +247,10 @@ export default function AlunoForm() {
           }),
         }
       );
-      if (!enderecoResponse.ok) throw new Error("Erro ao inserir endereço");
+      if (!enderecoResponse.ok) {
+        const errorData = await enderecoResponse.json();
+        throw new Error(errorData.message || "Erro ao inserir endereço");
+      }
       const enderecoData = await enderecoResponse.json();
 
       // 2. Insert Aluno
@@ -168,11 +260,14 @@ export default function AlunoForm() {
           ...requestOptions,
           body: JSON.stringify({
             tableName: "alunos",
-            data: { ...aluno, id_endereco: enderecoData.id },
+            data: { ...aluno, id_endereco: enderecoData.data.id },
           }),
         }
       );
-      if (!alunoResponse.ok) throw new Error("Erro ao inserir aluno");
+      if (!alunoResponse.ok) {
+        const errorData = await alunoResponse.json();
+        throw new Error(errorData.message || "Erro ao inserir aluno");
+      }
       const alunoData = await alunoResponse.json();
 
       // 3. Insert Responsável
@@ -182,12 +277,15 @@ export default function AlunoForm() {
           ...requestOptions,
           body: JSON.stringify({
             tableName: "responsaveis",
-            data: { ...responsavel, id_aluno: alunoData.id },
+            data: { ...responsavel, id_aluno: alunoData.data.id },
           }),
         }
       );
-      if (!responsavelResponse.ok)
-        throw new Error("Erro ao inserir responsável");
+      if (!responsavelResponse.ok) {
+        const errorData = await responsavelResponse.json();
+        throw new Error(errorData.message || "Erro ao inserir responsável");
+      }
+      const responsavelData = await responsavelResponse.json();
 
       // 4. Insert Pagamento
       const pagamentoResponse = await fetch(
@@ -198,7 +296,7 @@ export default function AlunoForm() {
             tableName: "pagamentos",
             data: {
               ...pagamento,
-              responsavel_id: responsavelResult.id,
+              responsavel_id: responsavelData.data.id,
               status: "pendente",
               juros: 0.0,
               tipo: pagamento.tipo,
@@ -206,9 +304,55 @@ export default function AlunoForm() {
           }),
         }
       );
-      if (!pagamentoResponse.ok) throw new Error("Erro ao inserir pagamento");
+      if (!pagamentoResponse.ok) {
+        const errorData = await pagamentoResponse.json();
+        throw new Error(errorData.message || "Erro ao inserir pagamento");
+      }
 
       alert("Cadastro realizado com sucesso!");
+      // Reset form after successful submission
+      setAluno({
+        nome_completo: "",
+        data_nascimento: "",
+        data_matricula: "",
+        telefone1: "",
+        telefone2: "",
+        foto: "",
+        rg: "",
+        cpf: "",
+        convenio: "",
+        alergia: "",
+        uso_medicamento: "",
+        medicamento_horario: "",
+        atestado_medico: "",
+        colegio: "",
+        colegio_ano: "",
+        time_coracao: "",
+        indicacao: "",
+        observacao: "",
+        id_turma: "",
+        ativo: "Ativo",
+      });
+      setEndereco({
+        cep: "",
+        cidade: "",
+        estado: "",
+        numero: "",
+        rua: "",
+      });
+      setResponsavel({
+        nome: "",
+        rg: "",
+        cpf: "",
+        grau_parentesco: "",
+      });
+      setPagamento({
+        data_vencimento: "",
+        valor_mensalidade: "",
+        valor_uniforme: "",
+        tipo: "",
+      });
+      setUploaded(false);
     } catch (error) {
       setError(error.message || "Erro ao cadastrar aluno");
       console.error(error);
@@ -219,6 +363,9 @@ export default function AlunoForm() {
 
   return (
     <div id="alunoFormRoot">
+      {error && <div className="error-message">{error}</div>}
+      {loading && <div className="loading-indicator">Carregando...</div>}
+
       <form className="formRoot" onSubmit={handleSubmit}>
         {/* Seção Aluno */}
         <div className="alunoSection formSection">
@@ -365,16 +512,39 @@ export default function AlunoForm() {
 
               <label>
                 <div className="label-text-container">Atestado Médico</div>
+                <div className="fotoContainer">
+                  <input
+                    type="file"
+                    onChange={handleAtestadoFile}
+                    accept="image/png, image/jpeg"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAtestado}
+                    className="uploadButton"
+                    disabled={isAtestadoUploaded}
+                  >
+                    {isAtestadoUploaded ? <CheckIcon /> : <FileUploadIcon />}
+                  </button>
+                </div>
+              </label>
+              <label>
+                <div className="label-text-container">
+                  Turma<span className="required-asterisk">*</span>
+                </div>
                 <select
                   required
-                  value={aluno.atestado_medico}
+                  value={aluno.id_turma}
                   onChange={(e) =>
-                    setAluno({ ...aluno, atestado_medico: e.target.value })
+                    setAluno({ ...aluno, id_turma: e.target.value })
                   }
                 >
                   <option value="">Selecione</option>
-                  <option value="S">Sim</option>
-                  <option value="N">Não</option>
+                  {turmas.map((turma) => (
+                    <option key={turma.id} value={turma.id}>
+                      {turma.codigo_turma} - {turma.nome}
+                    </option>
+                  ))}
                 </select>
               </label>
             </div>
@@ -382,65 +552,49 @@ export default function AlunoForm() {
             <div className="formColumn">
               <label>
                 <div className="label-text-container">Convênio</div>
-                <select
+                <input
                   required
                   value={aluno.convenio}
                   onChange={(e) =>
                     setAluno({ ...aluno, convenio: e.target.value })
                   }
-                >
-                  <option value="">Selecione</option>
-                  <option value="S">Sim</option>
-                  <option value="N">Não</option>
-                </select>
+                />
               </label>
               <label>
                 <div className="label-text-container">Alergia</div>
-                <select
+                <input
                   required
                   value={aluno.alergia}
                   onChange={(e) =>
                     setAluno({ ...aluno, alergia: e.target.value })
                   }
-                >
-                  <option value="">Selecione</option>
-                  <option value="S">Sim</option>
-                  <option value="N">Não</option>
-                </select>
+                />
               </label>
 
               <label>
                 <div className="label-text-container">Uso de Medicamento</div>
-                <select
+                <input
                   required
                   value={aluno.uso_medicamento}
                   onChange={(e) =>
                     setAluno({ ...aluno, uso_medicamento: e.target.value })
                   }
-                >
-                  <option value="">Selecione</option>
-                  <option value="S">Sim</option>
-                  <option value="N">Não</option>
-                </select>
+                />
               </label>
 
-              {aluno.uso_medicamento === "S" && (
-                <label>
-                  <div className="label-text-container">
-                    Horário Medicamento
-                  </div>
-                  <input
-                    type="time"
-                    value={aluno.medicamento_horario}
-                    onChange={(e) =>
-                      setAluno({
-                        ...aluno,
-                        medicamento_horario: e.target.value,
-                      })
-                    }
-                  />
-                </label>
-              )}
+              <label>
+                <div className="label-text-container">Horário Medicamento</div>
+                <input
+                  type="time"
+                  value={aluno.medicamento_horario}
+                  onChange={(e) =>
+                    setAluno({
+                      ...aluno,
+                      medicamento_horario: e.target.value,
+                    })
+                  }
+                />
+              </label>
 
               <label>
                 <div className="label-text-container">
@@ -518,26 +672,6 @@ export default function AlunoForm() {
                   }
                 />
               </label>
-
-              <label>
-                <div className="label-text-container">
-                  Turma<span className="required-asterisk">*</span>
-                </div>
-                <select
-                  required
-                  value={aluno.id_turma}
-                  onChange={(e) =>
-                    setAluno({ ...aluno, id_turma: e.target.value })
-                  }
-                >
-                  <option value="">Selecione</option>
-                  {turmas.map((turma) => (
-                    <option key={turma.id} value={turma.id}>
-                      {turma.codigo_turma} - {turma.nome}
-                    </option>
-                  ))}
-                </select>
-              </label>
             </div>
           </div>
         </div>
@@ -545,20 +679,27 @@ export default function AlunoForm() {
         {/* Seção Endereço */}
         <div className="enderecoSection formSection">
           <h3>Endereço</h3>
-          <label>
+          <label className="cep">
             <div className="label-text-container">
               CEP<span className="required-asterisk">*</span>
             </div>
-            <input
-              type="text"
-              required
-              pattern="[0-9]{5}-[0-9]{3}"
-              title="Formato: 12345-678"
-              placeholder="12345-678"
-              maxLength={9}
-              value={endereco.cep}
-              onChange={handleCepChange}
-            />
+            <div className="cep-input-container">
+              <input
+                type="text"
+                required
+                pattern="[0-9]{5}-[0-9]{3}"
+                title="Formato: 12345-678"
+                placeholder="12345-678"
+                maxLength={9}
+                value={endereco.cep}
+                onChange={handleCepChange}
+                onBlur={(e) => {
+                  if (endereco.cep.replace(/\D/g, "").length === 8) {
+                    getAddByCep(endereco.cep);
+                  }
+                }}
+              />
+            </div>
           </label>
           <label>
             <div className="label-text-container">
@@ -578,7 +719,13 @@ export default function AlunoForm() {
             <div className="label-text-container">
               Estado<span className="required-asterisk">*</span>
             </div>
-            <select required>
+            <select
+              required
+              value={endereco.estado}
+              onChange={(e) =>
+                setEndereco({ ...endereco, estado: e.target.value })
+              }
+            >
               <option value="">Selecione o estado</option>
               <option value="AC">AC</option>
               <option value="AL">AL</option>
@@ -681,7 +828,6 @@ export default function AlunoForm() {
             <input
               type="text"
               required
-              // maxLength={11}
               placeholder="000.000.000-00"
               value={responsavel.cpf}
               onChange={(e) => {
@@ -736,6 +882,7 @@ export default function AlunoForm() {
             <input
               type="number"
               step="0.01"
+              min="0"
               required
               placeholder="0.00"
               value={pagamento.valor_mensalidade}
@@ -755,6 +902,7 @@ export default function AlunoForm() {
             <input
               type="number"
               step="0.01"
+              min="0"
               required
               placeholder="0.00"
               value={pagamento.valor_uniforme}
@@ -785,7 +933,9 @@ export default function AlunoForm() {
         </div>
 
         <div className="formFooter">
-          <button type="submit">Cadastrar Aluno</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Processando..." : "Cadastrar Aluno"}
+          </button>
         </div>
       </form>
     </div>

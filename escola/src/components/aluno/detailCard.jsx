@@ -14,10 +14,12 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
   if (!aluno) return null;
 
   const [isUploaded, setUploaded] = useState(false);
+  const [isAtestadoUploaded, setAtestadoUploaded] = useState(false);
   const [isEditing, setEditor] = useState(false);
   const [formData, setFormData] = useState({});
   const [turmas, setTurmas] = useState([]);
   const [file, setFile] = useState(null);
+  const [atestadoFile, setAtestadoFIle] = useState(null);
 
   const ESTADOS = [
     "AC",
@@ -98,6 +100,45 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
+  };
+  const handleAtestadoFileChange = (e) => {
+    setAtestadoFIle(e.target.files[0]);
+  };
+
+  const handleAtestadoUpload = async () => {
+    if (isAtestadoUploaded) return;
+    try {
+      if (!atestadoFile) {
+        alert("Apenas Imagens são permitidas");
+        return;
+      }
+      if (!atestadoFile.type.startsWith("image/")) {
+        alert("Apenas imagens são permitidas!");
+        return;
+      }
+      const formDataUpload = new FormData();
+      formDataUpload.append("foto", atestadoFile);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKENDURL}/api/aluno/insert/atestados`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formDataUpload,
+        }
+      );
+
+      if (!response.ok) throw new Error(`Error! status: ${response.status}`);
+
+      const data = await response.json();
+      setFormData((prev) => ({ ...prev, atestado_medico: data.fotoUrl }));
+      setAtestadoUploaded(true);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      alert("Falha no upload da imagem: " + error.message);
+    }
   };
 
   const handleUpload = async () => {
@@ -319,7 +360,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
           <div className="detail-section foto-detail-section">
             <h3>Foto</h3>
             {isEditing ? (
-              <div className="fotoContainerDetail">
+              <div className="foto-ContainerDetail">
                 <img src={aluno.foto} />
                 <div className="inputContainerDetail">
                   <input
@@ -340,6 +381,34 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
             ) : (
               <div>
                 <img src={aluno.foto} />
+              </div>
+            )}
+          </div>
+
+          <div className="detail-section foto-detail-section">
+            <h3>Atestado Médico</h3>
+            {isEditing ? (
+              <div className="foto-ContainerDetail">
+                <img src={aluno.atestado_medico} />
+                <div className="inputContainerDetail">
+                  <input
+                    type="file"
+                    onChange={handleAtestadoFileChange}
+                    accept="image/png, image/jpeg"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAtestadoUpload}
+                    className="uploadButton"
+                    disabled={isAtestadoUploaded}
+                  >
+                    {isAtestadoUploaded ? <CheckIcon /> : <FileUploadIcon />}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <img src={aluno.atestado_medico} />
               </div>
             )}
           </div>

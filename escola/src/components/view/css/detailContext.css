@@ -28,10 +28,12 @@
   padding-top: 4rem;
   padding-bottom: 2rem;
   border: 1px solid var(--surface-a20);
+  color: white;
 }
 .detailContextCardHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .detailContextCardHeader h2 {
   font-size: 1.5rem;
@@ -40,3 +42,5 @@
   color: var(--text-primary);
   text-align: left;
 }
+
+

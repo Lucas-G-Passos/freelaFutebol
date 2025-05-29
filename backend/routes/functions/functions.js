@@ -139,8 +139,9 @@ async function getTurmas() {
 async function getFiliais() {
   try {
     const [rows] = await db.query(`SELECT 
-    filial.id AS filial_id,
-    filial.nome AS filial_nome,
+    filial.id,
+    filial.nome,
+    filial.id_endereco AS filial_id_endereco,
     endereco.cep,
     endereco.cidade,
     endereco.estado,
@@ -151,7 +152,7 @@ async function getFiliais() {
 
     return rows;
   } catch (error) {
-    console.error('db error (filiais): ',error)
+    console.error("db error (filiais): ", error);
   }
 }
 
@@ -456,5 +457,5 @@ export {
   getNAlunos,
   getInadimplenteNum,
   getAniversariantes,
-  getFiliais
+  getFiliais,
 };

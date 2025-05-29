@@ -38,5 +38,22 @@ export default function ContextMenu({
         </div>
       </div>
     );
+  } else if (type === "default") {
+    return (
+      <div
+        className="contextMenu"
+        style={{
+          position: "fixed",
+          left: position.x,
+          top: position.y,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="contextItem">
+          <AddIcon />
+          Adicionar Filial
+        </div>
+      </div>
+    );
   }
 }

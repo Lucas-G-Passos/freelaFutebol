@@ -3,7 +3,7 @@ import { buscarAlunos, buscarTurmas, getNalunos } from "./apiCalls";
 import DetailsCard from "./detailCard";
 import AlunoSearchInput from "./inputField";
 import Niver from "./niver";
-
+import SearchIcon from "@mui/icons-material/Search";
 import "./../css/aluno.css";
 
 export default function Aluno() {
@@ -68,7 +68,9 @@ export default function Aluno() {
             </select>
           </div>
 
-          <button onClick={handleSearch}>Buscar</button>
+          <button onClick={handleSearch}>
+            <SearchIcon />
+          </button>
         </div>
       </div>
       <div className="alunoCount">Número de alunos: {alunosCount}</div>
@@ -88,7 +90,8 @@ export default function Aluno() {
             {results.map((aluno) => (
               <li key={aluno.aluno_id} onClick={() => setSelectedAluno(aluno)}>
                 <img src={aluno.foto} className="fotoAluno" />
-                {aluno.aluno_id} - {aluno.nome_completo} - Turma: {aluno.nome_turma}
+                {aluno.aluno_id} - {aluno.nome_completo} - Turma:{" "}
+                {aluno.nome_turma}
               </li>
             ))}
           </ul>
