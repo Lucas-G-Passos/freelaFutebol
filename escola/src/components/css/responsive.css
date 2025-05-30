@@ -11,7 +11,6 @@
   * {
     overflow-x: hidden;
   }
-
   #alunoRoot {
     min-height: 100vh;
   }
@@ -24,7 +23,7 @@
     flex-direction: row;
     padding: 5px;
     border-top: 1px solid var(--surface-a50);
-    z-index: 1000;
+    z-index: 7;
   }
 
   #top-button-cont {
@@ -37,22 +36,27 @@
   #bottom-button-cont {
     display: none;
   }
-
   .navbutton {
-    height: 80px; /* única declaração de height */
-    min-width: 120px;
-    max-width: 120px;
-    font-size: 0.6em;
-    padding: 2px;
+    height: auto; /* Let height adjust to content */
+    min-height: 60px; /* Minimum touch target size */
+    padding: 5px; /* Consistent padding */
+    font-size: 0.7em; /* Slightly smaller font */
   }
 
   .navbutton svg {
-    font-size: 1.8em !important;
+    margin-bottom: 3px; /* Space between icon and text */
   }
 
   /* Botão de logout “mobile” */
   #logout-mobile {
     display: flex;
+    height: auto; /* Let height adjust to content */
+    min-height: 60px; /* Minimum touch target size */
+  /* Consistent padding */
+    font-size: 0.7em; /* Slightly smaller font */
+  }
+  .logo {
+    display: none;
   }
 }
 
@@ -119,7 +123,7 @@
 
   #results {
     overflow: auto;
-    font-size: .9em;
+    font-size: 0.9em;
     padding: 15px;
     padding-bottom: 60px;
     margin-top: 15px;
@@ -143,16 +147,24 @@
   #alunoFormRoot {
     padding: 1rem 5px;
   }
-
   .formRoot {
     margin: 10px;
     padding: 10px;
+    width: 100%;
+    flex-direction: column;
   }
 
   .formColumnContainer {
     gap: 1rem;
+    flex-wrap: wrap;
   }
-
+  .formColumn {
+    flex: 1 1 300px; /* Flex-grow, flex-shrink, min-width */
+    min-width: 0; /* Allow columns to shrink below 300px if needed */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
   .formSection {
     margin: 5px;
     padding: 5px;
@@ -163,10 +175,10 @@
   .formSection textarea {
     font-size: 0.9em;
     padding: 8px;
-    width: 80%;
+    width: 100%;
   }
 
-  .fotoContainer{
+  .fotoContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -189,8 +201,6 @@
 
 /* ============== DETAIL CARD RESPONSIVO ============== */
 @media (max-width: 768px) {
-  
-  
   .aluno-card {
     margin-top: 110px;
     margin-bottom: 110px;
@@ -241,8 +251,8 @@
 
 /* ============== ANVIERSARIANTES ============== */
 @media (max-width: 768px) {
-  .rootAniversariantes{
-    font-size: .9em;
+  .rootAniversariantes {
+    font-size: 0.9em;
   }
 }
 

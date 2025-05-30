@@ -219,16 +219,11 @@ export default function AlunoForm() {
     };
 
     try {
-      // Validação de campos obrigatórios
-      const requiredFields = {
-        endereco: ["cep", "cidade", "estado", "rua", "numero"],
-        responsavel: ["nome", "rg", "cpf", "grau_parentesco"],
-        pagamento: ["data_vencimento", "valor_mensalidade", "tipo"],
-      };
+      const dataSections = { endereco, responsavel, pagamento };
 
       Object.entries(requiredFields).forEach(([section, fields]) => {
         fields.forEach((field) => {
-          if (!eval(section)[field]) {
+          if (!dataSections[section][field]) {
             throw new Error(
               `Campo obrigatório faltando: ${field} (${section})`
             );

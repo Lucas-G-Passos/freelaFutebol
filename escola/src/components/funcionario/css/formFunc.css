@@ -39,6 +39,12 @@
 .funcionarioSection label {
   width: 100%;
 }
-.formRoot{
-  width: 50%;
+@media (max-width: 768px) {
+  .funcionarioSection{
+    flex-direction: column;
+  }
+  .funcionarioFormRoot{
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
 }

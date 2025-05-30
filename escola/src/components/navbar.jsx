@@ -12,7 +12,7 @@ export default function Navbar() {
     <div style={{ display: "flex", height: "100vh" }}>
       <div id="navbar">
         <div id="top-button-cont">
-          <img src="escudo.svg" className="logo" />
+          <img src="/escudo.svg" className="logo" />
           <NavLink to={"/aluno"} className="navlink">
             <div className="navbutton">
               <PeopleIcon />
@@ -22,7 +22,7 @@ export default function Navbar() {
           <NavLink to={"/funcionario"} className="navlink">
             <div className="navbutton">
               <PeopleIcon />
-              Consultar Funcionários
+              Consultar Func.
             </div>
           </NavLink>
           <NavLink to={"/aluno/form"} className="navlink">
@@ -37,7 +37,7 @@ export default function Navbar() {
               Cadastrar Func.
             </div>
           </NavLink>
-          <a
+          {/* <a
             id="logout-mobile"
             className="navlink"
             onClick={(e) => {
@@ -50,7 +50,7 @@ export default function Navbar() {
               <LogoutIcon />
               Logout
             </div>
-          </a>
+          </a> */}
         </div>
       </div>
       <div style={{ flexGrow: 1, backgroundColor: "var(--surface-a0)" }}>

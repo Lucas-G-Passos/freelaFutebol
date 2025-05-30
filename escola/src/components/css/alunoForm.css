@@ -54,15 +54,26 @@
   border-radius: 10px;
   border: 1px solid var(--surface-a30);
 }
-.formSection.alunoSection {
+
+.formColumnContainer {
+  display: flex;
+  
+  gap: 2rem;
+  width: 100%;
+}
+
+.formColumn {
+  flex: 1 1 300px; /* Flex-grow, flex-shrink, min-width */
+  min-width: 0; /* Allow columns to shrink below 300px if needed */
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-.formColumnContainer {
+
+.formSection.alunoSection {
   display: flex;
-  gap: 2rem;
-  width: 100%;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .formSection label {
@@ -84,13 +95,7 @@
   align-self: center;
   color: var(--primary-a20);
 }
-.formColumn {
-  flex: 1;
-  min-width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+
 .formHeader {
   margin: 0;
   padding: 1rem;

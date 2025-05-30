@@ -70,7 +70,7 @@ export default function DragView() {
 
         const positions = {};
         filialData.forEach((f, index) => {
-          positions[f.filial_id] = { x: 600 + index * 200, y: 300 };
+          positions[f.id] = { x: 600 + index * 200, y: 600 };
         });
         setPosition(positions);
       } catch (error) {
@@ -139,16 +139,16 @@ export default function DragView() {
       >
         {filial.map((f) => (
           <DraggableCard
-            key={f.filial_id}
-            id={f.filial_id}
-            name={f.filial_nome}
+            key={f.id}
+            id={f.id}
+            name={f.nome}
             icon={<ApartmentIcon />}
-            position={positions[f.filial_id] || { x: 0, y: 0 }}
+            position={positions[f.id] || { x: 0, y: 0 }}
             onClick={null}
-            onContextMenu={(e) => handleCardClick(e, f.filial_id, "filial", f)}
+            onContextMenu={(e) => handleCardClick(e, f.id, "filial", f)}
             onDragEnd={handleDragEnd}
           >
-            {f.filial_nome}
+            {f.nome}
           </DraggableCard>
         ))}
         {contextMenu.show && (

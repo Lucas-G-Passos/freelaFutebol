@@ -23,6 +23,7 @@
   #rootLogin {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 0.7fr 1.5fr 0.7fr;
+    overflow: hidden;
   }
   #login-form {
     grid-column: 2;
@@ -43,6 +44,7 @@
     linear-gradient(var(--surface-a0) calc(50px - 2px), transparent 1%) center /
       50px 50px,
     var(--primary-a40);
+    overflow: hidden;
 }
 
 #login-form {
@@ -57,7 +59,6 @@
 }
 
 #form {
-  width: 90%;
   height: 90%;
   flex-direction: column;
   display: flex;
@@ -67,6 +68,8 @@
   /* Keep them centered horizontally */
   gap: 10px;
   /* Add a small gap between elements, you can adjust this value */
+  width: 100%; /* Take full width of parent */
+  align-items: center; /* Center children horizontally */
 }
 
 .botao {
@@ -104,19 +107,20 @@
   background-color: var(--surface-a30);
   color: white;
   transition: all 0.2s ease;
+  width: 80%;
 }
 
 .input::placeholder {
   color: white;
 }
-.loginImg{
+.loginImg {
   width: 30%;
 }
 @media (max-width: 768px) {
-  .input{
+  .input {
     width: 80%;
   }
-  .rootLogin{
+  .rootLogin {
     overflow: hidden;
   }
 }

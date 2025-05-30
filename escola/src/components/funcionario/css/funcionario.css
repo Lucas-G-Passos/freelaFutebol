@@ -17,6 +17,7 @@
   padding: 2rem 1rem;
   box-sizing: border-box;
   gap: 2rem;
+  padding-bottom: 5rem;
 }
 .funcionarioCount {
   background-color: black;

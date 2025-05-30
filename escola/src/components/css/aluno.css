@@ -22,6 +22,7 @@
   grid-template-columns: repeat(8, 1fr);
   grid-auto-rows: min-content;
   gap: 5px;
+  padding-bottom: 5rem;
 }
 
 /* === SEARCH SECTION === */
@@ -48,7 +49,6 @@
   height: 60%;
 }
 
-
 #inputField input,
 .turma-select,
 #filterOptions select {
@@ -58,7 +58,7 @@
   color: var(--light-a0);
   padding: 10px;
 }
-#search{
+#search {
   height: 100%;
 }
 
@@ -192,6 +192,7 @@
   overflow-y: auto;
   padding-top: 4rem;
   padding-bottom: 2rem;
+  border: 1px solid var(--surface-a10);
 }
 .alunosCardHeader {
   display: flex;
@@ -439,7 +440,7 @@
   display: block;
   border-radius: 0.5rem;
 }
-input[type="file"]::file-selector-button{
+input[type="file"]::file-selector-button {
   background-color: var(--surface-a20);
   border: 1px solid var(--surface-a30);
   color: white;
@@ -448,7 +449,7 @@ input[type="file"]::file-selector-button{
   justify-self: center;
   cursor: pointer;
 }
-.alunoCount{
+.alunoCount {
   justify-self: center;
   grid-row: 3;
   grid-column: 4/6;
