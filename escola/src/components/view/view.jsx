@@ -7,6 +7,10 @@ import ContextMenu from "./contextMenu";
 import FilialDetailCard from "./filialDetailCard";
 import FuncionarioDetailsCard from "../funcionario/detailCardFunc";
 import DetailsCard from "../aluno/detailCard";
+import InsertForm from "./form";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import DraggableFolder from "./dragFolder";
+import FolderIcon from "@mui/icons-material/Folder";
 
 export default function DragView() {
   const [filial, setFilial] = useState([]);
@@ -29,6 +33,13 @@ export default function DragView() {
     type: null,
     data: null,
   });
+  const [form, setForm] = useState({
+    show: false,
+    id: null,
+    type: null,
+  });
+  const [folders, setFolders] = useState([]);
+  const [data, setData] = useState();
 
   async function getData(prop) {
     try {
@@ -97,7 +108,7 @@ export default function DragView() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const handleCardClick = (e, id, type, data) => {
+  const handleContext = (e, id, type, data) => {
     e.preventDefault();
     e.stopPropagation();
     setContextMenu({
@@ -127,6 +138,12 @@ export default function DragView() {
   const handleCloseDetailCard = () => {
     setDetailCard({ show: false, type: null, data: null });
   };
+  const handleForm = (e, type, id) => {
+    setForm({ show: true, type, id });
+  };
+  const handleCloseForm = () => {
+    setForm({ show: false, type: null });
+  };
 
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -135,7 +152,7 @@ export default function DragView() {
     <DndContext>
       <div
         className="dragViewRoot"
-        onContextMenu={(e) => handleCardClick(e, 1, "default", null)}
+        onContextMenu={(e) => handleContext(e, 1, "default", null)}
       >
         {filial.map((f) => (
           <DraggableCard
@@ -144,9 +161,9 @@ export default function DragView() {
             name={f.nome}
             icon={<ApartmentIcon />}
             position={positions[f.id] || { x: 0, y: 0 }}
-            onClick={null}
-            onContextMenu={(e) => handleCardClick(e, f.id, "filial", f)}
+            onContextMenu={(e) => handleContext(e, f.id, "filial", f)}
             onDragEnd={handleDragEnd}
+            onClick={null}
           >
             {f.nome}
           </DraggableCard>
@@ -160,6 +177,10 @@ export default function DragView() {
             showDetail={(e) =>
               handleDetailCard(e, contextMenu.type, contextMenu.data)
             }
+            form={(e) => {
+              handleForm(e, contextMenu.type, contextMenu.id);
+              console.log(contextMenu.type, contextMenu.id);
+            }}
           />
         )}
         {detailCard.show && detailCard.type === "filial" && (
@@ -177,6 +198,13 @@ export default function DragView() {
         )}
         {detailCard.show && detailCard.type === "aluno" && (
           <DetailsCard data={detailCard.data} />
+        )}
+        {form.show && (
+          <InsertForm
+            onClose={handleCloseForm}
+            type={form.type}
+            filial={filial.find((f) => f.id === form.id)}
+          />
         )}
       </div>
     </DndContext>

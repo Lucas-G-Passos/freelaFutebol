@@ -10,6 +10,7 @@ export default function ContextMenu({
   type,
   data,
   showDetail,
+  form,
 }) {
   if (type === "filial") {
     return (
@@ -22,7 +23,7 @@ export default function ContextMenu({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="contextItem">
+        <div className="contextItem" onClick={form}>
           <AddIcon />
           Adicionar Turma
         </div>
@@ -49,7 +50,7 @@ export default function ContextMenu({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="contextItem">
+        <div className="contextItem" onClick={form}>
           <AddIcon />
           Adicionar Filial
         </div>

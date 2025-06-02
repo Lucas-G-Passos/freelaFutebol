@@ -1,7 +1,7 @@
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 
-export default function DraggableCard({
+export default function DraggableFolder({
   id,
   position,
   icon,
@@ -13,7 +13,6 @@ export default function DraggableCard({
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
-
   const style = {
     position: "absolute",
     left: position.x + (transform?.x || 0),
@@ -24,7 +23,7 @@ export default function DraggableCard({
     <div
       style={style}
       ref={setNodeRef}
-      className="draggableCard"
+      className="draggableFolder"
       onClick={onClick}
       onContextMenu={onContextMenu}
       onPointerUp={() => {

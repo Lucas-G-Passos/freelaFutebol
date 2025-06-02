@@ -1,0 +1,87 @@
+.viewFormOverlay {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  z-index: 900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+.viewFormRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  max-height: 100vh; /* Adjusted to fit within viewport */
+  overflow-y: auto; /* Ensure vertical scrolling */
+}
+.closeContainer {
+  width: 100vw;
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 10px;
+}
+.closeContainer button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--surface-a10);
+  color: var(--primary-a0);
+  border: 1px solid var(--surface-a20);
+  border-radius: 10px;
+  padding: 10px;
+  transition: all 0.2s ease-in-out;
+}
+.closeContainer button:hover {
+  padding: 10px; /* Reduced hover padding */
+  cursor: pointer;
+}
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+}
+.formHeader button {
+  background-color: var(--surface-a10);
+  border: var(--surface-a30) 1px solid;
+  color: var(--primary-a0);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.7em; /* Reduced font size */
+  font-weight: bold;
+  padding: 0.5rem; /* Reduced padding */
+  transition: all 0.2s ease-in-out;
+}
+.formFooter button:disabled {
+  color: var(--surface-a10);
+}
+
+.error-message.turma {
+  position: fixed; /* Ensure it stays in place */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for element dimensions */
+}
+.error-message.turma button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--surface-a10);
+  color: var(--primary-a0);
+  border: none;
+  position: absolute; /* Position relative to the container */
+  top: 0; /* Align to the top */
+  right: 0; /* Align to the right */
+  margin: 10px; /* Add spacing from edges */
+  cursor: pointer;
+}
