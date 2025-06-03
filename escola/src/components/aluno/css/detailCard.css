@@ -1,0 +1,89 @@
+.aluno-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.aluno-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 800px;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.alunosCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.actionButtons,
+.actionButtonsContainer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.detailSection,
+.detail-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.fotoContainerDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.inputContainerDetail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.saveButton,
+.clearButton,
+.editButton,
+.closeButton,
+.uploadButton,
+.pdf-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.saveButton:hover,
+.clearButton:hover,
+.editButton:hover,
+.closeButton:hover,
+.uploadButton:hover,
+.pdf-button:hover {
+  transform: scale(1.1);
+}
+
+img {
+  max-width: 150px;
+  border-radius: 0.5rem;
+}

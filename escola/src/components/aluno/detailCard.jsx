@@ -1,5 +1,3 @@
-// DetailCard.jsx
-
 import React, { useState, useEffect } from "react";
 import { buscarTurmas } from "./apiCalls";
 import CloseIcon from "@mui/icons-material/Close";
@@ -9,6 +7,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CheckIcon from "@mui/icons-material/Check";
+import './css/detailCard.css'
 
 export default function DetailsCard({ aluno, onClose, onUpdate }) {
   if (!aluno) return null;

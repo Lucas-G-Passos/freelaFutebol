@@ -219,17 +219,40 @@ export default function AlunoForm() {
     };
 
     try {
-      const dataSections = { endereco, responsavel, pagamento };
+      // const dataSections = { endereco, responsavel, pagamento };
+      // const requiredFields = {
+      //   aluno: [
+      //     "nome_completo",
+      //     "data_nascimento",
+      //     "data_matricula",
+      //     "telefone1",
+      //     "foto",
+      //     "rg",
+      //     "cpf",
+      //     "colegio",
+      //     "colegio_ano",
+      //     "time_coracao",
+      //     "id_turma",
+      //   ],
+      //   endereco: ["cep", "cidade", "estado", "rua", "numero"],
+      //   responsavel: ["nome", "rg", "cpf", "grau_parentesco"],
+      //   pagamento: [
+      //     "data_vencimento",
+      //     "valor_mensalidade",
+      //     "valor_uniforme",
+      //     "tipo",
+      //   ],
+      // };
 
-      Object.entries(requiredFields).forEach(([section, fields]) => {
-        fields.forEach((field) => {
-          if (!dataSections[section][field]) {
-            throw new Error(
-              `Campo obrigatório faltando: ${field} (${section})`
-            );
-          }
-        });
-      });
+      // Object.entries(requiredFields).forEach(([section, fields]) => {
+      //   fields.forEach((field) => {
+      //     if (!dataSections[section][field]) {
+      //       throw new Error(
+      //         `Campo obrigatório faltando: ${field} (${section})`
+      //       );
+      //     }
+      //   });
+      // });
 
       // 1. Insert Endereço
       const enderecoResponse = await fetch(
