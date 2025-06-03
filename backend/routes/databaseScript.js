@@ -21,7 +21,11 @@ import {
 } from "./functions/functionFuncionario.js";
 import express from "express";
 import multer from "multer";
-import { uploadImage, uploadAtestado, uploadImageFuncionario } from "./../imgKit.js";
+import {
+  uploadImage,
+  uploadAtestado,
+  uploadImageFuncionario,
+} from "./../imgKit.js";
 import db from "../db.js";
 const router = express.Router();
 
@@ -375,7 +379,7 @@ router.put("/aluno/update", async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // Validação do CEP
+    // Validação do CEP (mantida)
     if (endereco.cep) {
       const cepRaw = endereco.cep.replace(/-/g, "");
       if (!/^\d{8}$/.test(cepRaw)) {
@@ -388,7 +392,7 @@ router.put("/aluno/update", async (req, res) => {
       endereco.cep = cepRaw;
     }
 
-    // Atualiza endereço
+    // Atualiza endereço (mantida)
     await conn.query(
       `UPDATE endereco SET estado = ?, cidade = ?, rua = ?, cep = ? WHERE id = ?`,
       [
@@ -400,7 +404,7 @@ router.put("/aluno/update", async (req, res) => {
       ]
     );
 
-    // Atualiza aluno
+    // Atualiza aluno (SEM id_endereco - já está vinculado)
     await conn.query(
       `UPDATE alunos SET 
         nome_completo = ?, telefone1 = ?, telefone2 = ?, rg = ?, cpf = ?, convenio = ?,
@@ -431,7 +435,7 @@ router.put("/aluno/update", async (req, res) => {
       ]
     );
 
-    // (Opcional) Atualiza responsável, se necessário
+    // Atualização do responsável (mantida)
     if (responsavel && responsavel.id) {
       await conn.query(
         `UPDATE responsaveis SET nome = ?, cpf = ?, rg = ?, grau_parentesco = ? WHERE id = ?`,
@@ -445,15 +449,15 @@ router.put("/aluno/update", async (req, res) => {
       );
     }
 
-    // Commit apenas se todas as operações foram bem-sucedidas
     await conn.commit();
 
-    // Buscar o aluno completo atualizado (JOIN com endereço e responsável)
+    // Consulta final CORRIGIDA (JOIN com id_endereco)
     const [rows] = await conn.query(
-      `SELECT a.*, e.estado, e.cidade, e.rua, e.cep, r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.rg AS responsavel_rg, r.grau_parentesco
+      `SELECT a.*, e.estado, e.cidade, e.rua, e.cep, 
+              r.nome AS responsavel_nome, r.cpf AS responsavel_cpf, r.rg AS responsavel_rg, r.grau_parentesco
        FROM alunos a
-       JOIN endereco e ON e.id = a.endereco_id
-       LEFT JOIN responsaveis r ON r.id = a.responsavel_id
+       JOIN endereco e ON e.id = a.id_endereco
+       LEFT JOIN responsaveis r ON r.id_aluno = a.id
        WHERE a.id = ?`,
       [aluno.id]
     );
