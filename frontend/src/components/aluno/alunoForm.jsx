@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./../css/alunoForm.css";
+import "../css/alunoForm.css";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CheckIcon from "@mui/icons-material/Check";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
