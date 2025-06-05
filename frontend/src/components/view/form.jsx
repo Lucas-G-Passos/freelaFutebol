@@ -400,28 +400,34 @@ export default function InsertForm({ type, onClose, filial }) {
                   <span>
                     Dias da Semana<span className="required-asterisk">*</span>
                   </span>
-                  {["Segunda", "Terça", "Quarta", "Quinta", "Sexta"].map(
-                    (day) => (
-                      <label key={day} className="checkbox-option">
-                        {day}
-                        <input
-                          type="checkbox"
-                          value={day}
-                          checked={turma.dias_semana.includes(day)}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            const value = e.target.value;
-                            setTurma((prev) => ({
-                              ...prev,
-                              dias_semana: checked
-                                ? [...prev.dias_semana, value]
-                                : prev.dias_semana.filter((d) => d !== value),
-                            }));
-                          }}
-                        />
-                      </label>
-                    )
-                  )}
+                  {[
+                    "Segunda",
+                    "Terça",
+                    "Quarta",
+                    "Quinta",
+                    "Sexta",
+                    "Sábado",
+                    "Domingo",
+                  ].map((day) => (
+                    <label key={day} className="checkbox-option">
+                      {day}
+                      <input
+                        type="checkbox"
+                        value={day}
+                        checked={turma.dias_semana.includes(day)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          const value = e.target.value;
+                          setTurma((prev) => ({
+                            ...prev,
+                            dias_semana: checked
+                              ? [...prev.dias_semana, value]
+                              : prev.dias_semana.filter((d) => d !== value),
+                          }));
+                        }}
+                      />
+                    </label>
+                  ))}
                 </div>
                 <label>
                   <div className="label-text-container">

@@ -60,8 +60,8 @@ export default function InputField({ sendData, hasSearched }) {
         >
           <option value="">Selecione uma filial</option>
           {filial.map((f) => (
-            <option key={f.filial_id} value={f.filial_id}>
-              {f.filial_nome}
+            <option key={f.id} value={f.id}>
+              {f.nome}
             </option>
           ))}
         </select>

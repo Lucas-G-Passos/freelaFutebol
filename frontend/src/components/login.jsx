@@ -42,7 +42,7 @@ export default function Login() {
     <div id="rootLogin">
       <div id="login-form">
         <form id="form" onSubmit={login}>
-          <img src="escudo.svg" className="loginImg"/>
+          <img src="/tigre.png" className="loginImg"/>
           <input
             type="text"
             name="username"
