@@ -1,0 +1,90 @@
+.importRoot {
+  background: linear-gradient(
+        90deg,
+        var(--surface-a0) calc(50px - 2px),
+        transparent 1%
+      )
+      center / 50px 50px,
+    linear-gradient(var(--surface-a0) calc(50px - 2px), transparent 1%) center /
+      50px 50px,
+    var(--primary-a40);
+  color: var(--light-a0);
+  display: flex;
+  min-height: 100vh;
+  gap: 5px;
+  padding-bottom: 5rem;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-left: 7vw;
+}
+.mainImportContainer {
+  background-color: var(--surface-a10);
+  width: 80%;
+  height: fit-content;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border: 1px solid var(--surface-a20);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: all 0.2s ease-in-out;
+}
+.importInputContainer {
+  width: 90%;
+  background-color: var(--surface-a20);
+  border-radius: 10px;
+  border: var(--surface-a30) 1px solid;
+  padding: 2rem;
+  display: flex;
+}
+.importInput {
+  background-color: var(--surface-a10);
+  border: 1px solid var(--surface-a30);
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+.importInputLabel {
+  padding: 0.5rem;
+}
+.labelImportInput {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0.5rem;
+  width: fit-content;
+}
+.labelImportInput label {
+  padding: 0.5rem;
+}
+.importInputInnerContainer {
+  padding: 0.5rem;
+  width: fit-content;
+  flex-direction: column;
+  display: flex;
+}
+.importInputInnerContainer div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.uploadImport {
+  color: var(--primary-a40);
+  background-color: var(--surface-a10);
+  border: 1px solid var(--surface-a30);
+  border-radius: 10px;
+  padding: 0.4rem;
+  cursor: pointer;
+  margin: 0 5px 0 5px;
+}
+.error-message.import {
+  position: absolute;
+  top: 0;
+}
+.closeButton.import.button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}

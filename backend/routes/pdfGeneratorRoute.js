@@ -1,5 +1,6 @@
 import express from "express";
 import createPDF from "./functions/pdfGen.js";
+import db from "./../db.js";
 
 const router = express.Router();
 
@@ -16,9 +17,20 @@ function validateFields(obj, schema) {
   }
 }
 
+async function getTurmaById(id) {
+  const [rows] = await db.query("SELECT * FROM turmas WHERE id = ?", [id]);
+  return rows[0];
+}
+async function getPagbyId(id) {
+  const [rows] = await db.query(
+    "SELECT * FROM pagamentos WHERE responsavel_id = ?",
+    [id]
+  );
+  return rows[0];
+}
+
 router.post("/pdf", async (req, res) => {
   try {
-    // Campos obrigatórios
     const requiredFields = {
       aluno: {
         nome_completo: "Nome do aluno é obrigatório",
@@ -40,13 +52,20 @@ router.post("/pdf", async (req, res) => {
       },
     };
 
-    // Valida entrada
     validateFields(req.body, requiredFields);
 
-    // Prepara dados exatamente conforme requisitado no front-end
+    const turma = await getTurmaById(req.body.aluno.id_turma);
+    const pag = await getPagbyId(req.body.responsavel.id);
+
     const pdfData = {
       aluno: {
         ...req.body.aluno,
+        data_matricula: new Date(
+          req.body.aluno.data_matricula
+        ).toLocaleDateString(),
+        data_nascimento: new Date(
+          req.body.aluno.data_nascimento
+        ).toLocaleDateString(),
       },
       endereco: {
         ...req.body.endereco,
@@ -55,8 +74,15 @@ router.post("/pdf", async (req, res) => {
       responsavel: {
         ...req.body.responsavel,
       },
+      turma: turma,
+      pagamento: {
+        ...pag,
+        data_vencimento: new Date(pag.data_vencimento).toLocaleDateString(),
+        data_pagamento: new Date(pag.data_pagamento).toLocaleDateString(),
+      },
     };
 
+    console.log(pdfData);
     // Gera PDF
     const raw = await createPDF(pdfData);
     const pdfBuffer = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);

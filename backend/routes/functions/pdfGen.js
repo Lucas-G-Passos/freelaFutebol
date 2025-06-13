@@ -14,7 +14,9 @@ handlebars.registerHelper("formatDate", (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("pt-BR");
 });
-
+handlebars.registerHelper("ifEquals", function (arg1, arg2, options) {
+  return arg1 === arg2 ? options.fn(this) : options.inverse(this);
+});
 handlebars.registerHelper("currency", (value) => {
   return parseFloat(value).toLocaleString("pt-BR", {
     style: "currency",
@@ -44,7 +46,6 @@ export default async function createPDF(data) {
     // Compila o template
     const template = handlebars.compile(templateHtml);
     const html = template(data);
-    console.log("Generated HTML:", html.substring(0, 1000) + "…");
 
     // Configuração do Puppeteer
     const browser = await puppeteer.launch({

@@ -7,7 +7,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CheckIcon from "@mui/icons-material/Check";
-import './css/detailCard.css'
+import "./css/detailCard.css";
 
 export default function DetailsCard({ aluno, onClose, onUpdate }) {
   if (!aluno) return null;
@@ -250,6 +250,7 @@ export default function DetailsCard({ aluno, onClose, onUpdate }) {
           cpf: formData.cpf,
           rg: formData.rg,
           grau_parentesco: formData.grau_parentesco,
+          id: formData.responsavel_id,
         },
       };
 

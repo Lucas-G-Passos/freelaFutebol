@@ -1,0 +1,54 @@
+.responseTable {
+  min-width: 100vw;
+  min-height: 100vh;
+  z-index: 9999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 5vw;
+  background-color: black;
+  overflow: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  white-space: nowrap;
+}
+.resultsTable {
+  position: relative;
+  background-color: var(--surface-a10);
+  border: 1px solid var(--surface-a20);
+  min-width: max-content;
+}
+table {
+  border-radius: 10px;
+}
+td,
+th {
+  border: 1px solid var(--surface-a20);
+  padding: 5px;
+  width: fit-content;
+  text-wrap: nowrap;
+}
+.tableButton {
+  background-color: var(--surface-a10);
+  border: 1px solid var(--surface-a20);
+  padding: 5px;
+  margin: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: var(--primary-a0);
+}
+.tableButtonsContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
