@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import "./css/form.css";
 
-export default function InsertForm({ type, onClose, filial }) {
+export default function InsertForm({ type, onClose, filial,rerun }) {
   console.log(filial);
   const [endereco, setEndereco] = useState({
     cep: "",
@@ -118,6 +118,7 @@ export default function InsertForm({ type, onClose, filial }) {
           numero: "",
           rua: "",
         });
+        rerun()
       } catch (error) {
         setError(error.message || "Erro ao cadastrar Filial");
       } finally {
@@ -330,6 +331,7 @@ export default function InsertForm({ type, onClose, filial }) {
           sala: "",
           id_filial: filial.id,
         });
+        rerun()
       } catch (error) {
         setError(error.message || "Erro ao cadastrar Filial");
       } finally {

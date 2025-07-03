@@ -1,0 +1,294 @@
+import React, { useState, useEffect } from "react";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import CloseIcon from "@mui/icons-material/Close";
+import "./css/turmaCard.css";
+
+export default function TurmaCard({ filial_id, turmas, rerun, onClose }) {
+  const [deleteCard, setDeleteCard] = useState({ turma: null, show: false });
+  const [detail, setDetail] = useState({ turma: null, show: false });
+  const [editMode, setEditMode] = useState(false);
+
+  const diasDaSemanaTodos = [
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado",
+    "Domingo",
+  ];
+
+  const handleOpenDetail = (turma) => {
+    setDetail({ turma, show: true });
+    setEditMode(false);
+  };
+
+  const handleCloseDetail = () => {
+    setDetail({ turma: null, show: false });
+    setEditMode(false);
+  };
+
+  async function deleteTurma(id, nome) {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKENDURL}/api/turmas/delete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ id, nome }),
+        }
+      );
+
+      if (!res.ok) throw new Error(`Erro ao deletar turma: ${res.status}`);
+      const data = await res.json();
+      console.log("Turma deletada:", data);
+      rerun();
+    } catch (error) {
+      console.error("Erro ao deletar turma:", error);
+    }
+  }
+
+  function DeleteCard({ turma }) {
+    return (
+      <div className="deleteCard">
+        <h1>Você tem certeza que quer deletar a turma {turma.nome}?</h1>
+        <div style={{ display: "flex", gap: "5px" }}>
+          <button
+            type="button"
+            onClick={() => setDeleteCard({ turma: null, show: false })}
+            className="cancel"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              deleteTurma(turma.id, turma.nome);
+              setDeleteCard({ turma: null, show: false });
+            }}
+          >
+            DELETAR
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function TurmaDetail({ turma, visible }) {
+    const [formData, setFormData] = useState({
+      nome: "",
+      codigo_turma: "",
+      descricao: "",
+      dias_semana: [],
+      hora_inicio: "",
+      hora_termino: "",
+      sala: "",
+    });
+
+    const [initialized, setInitialized] = useState(false);
+
+    useEffect(() => {
+      if (!turma || initialized) return;
+      setFormData({
+        nome: turma.nome || "",
+        codigo_turma: turma.codigo_turma || "",
+        descricao: turma.descricao || "",
+        dias_semana: Array.isArray(turma.dias_semana)
+          ? turma.dias_semana
+          : turma.dias_semana?.split(",").map((d) => d.trim()) || [],
+        hora_inicio: turma.hora_inicio || "",
+        hora_termino: turma.hora_termino || "",
+        sala: turma.sala || "",
+      });
+      setInitialized(true);
+    }, [turma, initialized]);
+
+    useEffect(() => {
+      if (!visible) {
+        setInitialized(false); // reset ao fechar
+      }
+    }, [visible]);
+
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const toggleDiaSemana = (dia) => {
+      setFormData((prev) => {
+        const jaTem = prev.dias_semana.includes(dia);
+        return {
+          ...prev,
+          dias_semana: jaTem
+            ? prev.dias_semana.filter((d) => d !== dia)
+            : [...prev.dias_semana, dia],
+        };
+      });
+    };
+
+    if (!turma) return null;
+
+    return (
+      <div className={`turmaDetailRoot ${visible ? "visible" : "hidden"}`}>
+        <button
+          type="button"
+          className="turmaDetailClose toSide"
+          onClick={() => setEditMode((e) => !e)}
+        >
+          <EditIcon />
+        </button>
+        <button className="turmaDetailClose" onClick={handleCloseDetail}>
+          <CloseIcon />
+        </button>
+        <h2>Detalhes da Turma</h2>
+
+        <div className="turmaDetailItem">
+          <label>ID:</label>
+          <span>{turma.id}</span>
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>Nome:</label>
+          {editMode ? (
+            <input name="nome" value={formData.nome} onChange={handleChange} />
+          ) : (
+            <span>{formData.nome}</span>
+          )}
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>Código:</label>
+          {editMode ? (
+            <input
+              name="codigo_turma"
+              value={formData.codigo_turma}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{formData.codigo_turma}</span>
+          )}
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>Descrição:</label>
+          {editMode ? (
+            <input
+              name="descricao"
+              value={formData.descricao}
+              onChange={handleChange}
+            />
+          ) : (
+            <span>{formData.descricao}</span>
+          )}
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>Dias da Semana:</label>
+          {editMode ? (
+            <div className="diasCheckboxes">
+              {diasDaSemanaTodos.map((dia) => (
+                <label key={dia}>
+                  <input
+                    type="checkbox"
+                    checked={formData.dias_semana.includes(dia)}
+                    onChange={() => toggleDiaSemana(dia)}
+                  />
+                  {dia}
+                </label>
+              ))}
+            </div>
+          ) : (
+            <span>{formData.dias_semana.join(", ")}</span>
+          )}
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>Horário:</label>
+          {editMode ? (
+            <span>
+              <input
+                type="time"
+                name="hora_inicio"
+                value={formData.hora_inicio}
+                onChange={handleChange}
+              />{" "}
+              -{" "}
+              <input
+                type="time"
+                name="hora_termino"
+                value={formData.hora_termino}
+                onChange={handleChange}
+              />
+            </span>
+          ) : (
+            <span>
+              {formData.hora_inicio} - {formData.hora_termino}
+            </span>
+          )}
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>Sala:</label>
+          {editMode ? (
+            <input name="sala" value={formData.sala} onChange={handleChange} />
+          ) : (
+            <span>{formData.sala}</span>
+          )}
+        </div>
+
+        <div className="turmaDetailItem">
+          <label>ID Filial:</label>
+          <span>{turma.id_filial}</span>
+        </div>
+      </div>
+    );
+  }
+
+  function Cards({ turma }) {
+    return (
+      <div className="turmaCard" onClick={() => handleOpenDetail(turma)}>
+        <div>
+          <strong>ID:</strong> {turma.id}
+        </div>
+        <div>
+          <strong>Código da Turma:</strong> {turma.codigo_turma}
+        </div>
+        <div>
+          <strong>Nome:</strong> {turma.nome}
+        </div>
+        <div style={{ display: "flex" }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteCard({ turma: turma, show: true });
+            }}
+          >
+            <DeleteForeverIcon />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="turmaCardOverlay">
+      <button type="button" className="closeButton" onClick={onClose}>
+        <CloseIcon />
+      </button>
+      <div className="turmasCardRoot">
+        <div className="turmasCardContainer">
+          {turmas.map((t) => (
+            <Cards turma={t} key={t.id} />
+          ))}
+        </div>
+      </div>
+      {deleteCard.show && <DeleteCard turma={deleteCard.turma} />}
+      <TurmaDetail turma={detail.turma} visible={detail.show} />
+    </div>
+  );
+}

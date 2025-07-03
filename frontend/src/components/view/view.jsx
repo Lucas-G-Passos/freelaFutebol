@@ -11,6 +11,7 @@ import InsertForm from "./form";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import DraggableFolder from "./dragFolder";
 import FolderIcon from "@mui/icons-material/Folder";
+import TurmaCard from "./turmaCard.jsx";
 
 export default function DragView() {
   const [filial, setFilial] = useState([]);
@@ -20,6 +21,7 @@ export default function DragView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [positions, setPosition] = useState();
+  const [rerun, setRerun] = useState(0);
   const [detailCard, setDetailCard] = useState({
     show: false,
     type: null,
@@ -37,6 +39,11 @@ export default function DragView() {
     show: false,
     id: null,
     type: null,
+  });
+  const [turmasCard, setTurmasCard] = useState({
+    show: false,
+    filial_id: null,
+    turmas: null,
   });
   const [folders, setFolders] = useState([]);
   const [data, setData] = useState();
@@ -101,6 +108,35 @@ export default function DragView() {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
+
+    async function fetchData() {
+      try {
+        const [turmaData, filialData, alunoData, funciData] = await Promise.all(
+          [
+            getData("turmas"),
+            getData("filial"),
+            getData("aluno"),
+            getData("funcionario"),
+          ]
+        );
+        setTurmas(turmaData);
+        setFilial(filialData);
+        setAlunos(alunoData);
+        setFuncionario(funciData);
+      } catch (error) {
+        if (isMounted) {
+          setError("Failed to load data");
+          console.error("Fetch error:", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [rerun]);
+
+  useEffect(() => {
     const handleClickOutside = () => {
       setContextMenu((prev) => ({ ...prev, show: false }));
     };
@@ -144,7 +180,15 @@ export default function DragView() {
   const handleCloseForm = () => {
     setForm({ show: false, type: null });
   };
-
+  const handleTurmasCard = (e, id, turmas) => {
+    setTurmasCard({ show: true, filial_id: id, turmas: turmas });
+  };
+  const handleCloseTurmas = () => {
+    setTurmasCard({ show: false, filial_id: null, turmas: null });
+  };
+  const handleRerun = () => {
+    setRerun((prev) => prev + 1);
+  };
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
@@ -163,7 +207,10 @@ export default function DragView() {
             position={positions[f.id] || { x: 0, y: 0 }}
             onContextMenu={(e) => handleContext(e, f.id, "filial", f)}
             onDragEnd={handleDragEnd}
-            onClick={null}
+            onClick={(e) => {
+              const filtraTurmas = turmas.filter((t) => t.id_filial === f.id);
+              handleTurmasCard(e, f.id, filtraTurmas);
+            }}
           >
             {f.nome}
           </DraggableCard>
@@ -204,6 +251,15 @@ export default function DragView() {
             onClose={handleCloseForm}
             type={form.type}
             filial={filial.find((f) => f.id === form.id)}
+            rerun={handleRerun}
+          />
+        )}
+        {turmasCard.show && (
+          <TurmaCard
+            onClose={handleCloseTurmas}
+            filial_id={turmasCard.filial_id}
+            turmas={turmasCard.turmas}
+            rerun={handleRerun}
           />
         )}
       </div>

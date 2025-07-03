@@ -81,8 +81,6 @@ router.post("/pdf", async (req, res) => {
         data_pagamento: new Date(pag.data_pagamento).toLocaleDateString(),
       },
     };
-
-    console.log(pdfData);
     // Gera PDF
     const raw = await createPDF(pdfData);
     const pdfBuffer = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);

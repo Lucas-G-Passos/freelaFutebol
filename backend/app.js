@@ -21,11 +21,11 @@ app.use(express.json());
 // });
 
 // Example Express middleware
-app.use((req, res, next) => {
-  console.log(`Received ${req.method} request at ${req.url}`);
-  console.log("Body:", req.body);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(`Received ${req.method} request at ${req.url}`);
+//   console.log("Body:", req.body);
+//   next();
+// });
 
 app.use("/api", verifyJWT, router, routerPDF, routerImport);
 app.use("/auth", routerLogin);
