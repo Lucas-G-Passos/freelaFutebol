@@ -12,6 +12,7 @@ import FuncionarioForm from "./components/funcionario/funcionarioForm";
 import React from "react";
 import DragView from "./components/view/view";
 import ImportsExports from "./components/imports/importsExports";
+import CreateUsuario from "./components/usuario/createUser";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -25,6 +26,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/funcionario/Form" element={<FuncionarioForm />} />
           <Route path="/view" element={<DragView />} />
           <Route path="/imports" element={<ImportsExports />} />
+          <Route path="/usuarios" element={<CreateUsuario />} />
         </Route>
       </Route>
     </Routes>

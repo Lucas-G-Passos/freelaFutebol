@@ -568,9 +568,7 @@ router.post("/turmas/update", async (req, res) => {
       ]
     );
 
-    const rows = await c.query(`SELECT * FROM turmas WHERE id = ?`, [
-      turma.id,
-    ]);
+    const rows = await c.query(`SELECT * FROM turmas WHERE id = ?`, [turma.id]);
     await c.commit();
     res.status(200).json(rows);
   } catch (error) {

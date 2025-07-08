@@ -1,0 +1,38 @@
+.usuarioRoot {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.usuarioInputContainer {
+  width: 70%;
+  height: 70%;
+  background-color: var(--surface-a10);
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.usuarioInputContainer div{
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.formSection.usuario{
+    flex-direction: row;
+}
+.formSection.usuario button{
+    padding: 5px;
+    background-color: transparent;
+    border: 2px solid var(--surface-a0);
+    color: #fff;
+    border-radius: 16px;
+    cursor: pointer;
+}
+.formSection.usuario label{
+    color: white;
+}

@@ -6,6 +6,7 @@ import routerLogin from "./routes/functions/auth.js";
 import routerPDF from "./routes/pdfGeneratorRoute.js";
 import { configDotenv } from "dotenv";
 import routerImport from "./routes/importExport/importAlunos.js";
+import routerUser from "./routes/usuarioCreate.js";
 configDotenv();
 
 const SECRET = process.env.SECRET;
@@ -27,7 +28,7 @@ app.use(express.json());
 //   next();
 // });
 
-app.use("/api", verifyJWT, router, routerPDF, routerImport);
+app.use("/api", verifyJWT, router, routerPDF, routerImport, routerUser);
 app.use("/auth", routerLogin);
 
 const PORT = 5000;
