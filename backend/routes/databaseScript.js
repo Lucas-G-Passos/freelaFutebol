@@ -27,6 +27,8 @@ import {
   uploadImageFuncionario,
 } from "./../imgKit.js";
 import db from "../db.js";
+import verifyJWT from "../JWT.js";
+
 const router = express.Router();
 
 router.use(express.json());
@@ -69,7 +71,7 @@ const validateInsertData = async (req, res, next) => {
 };
 
 // Alunos
-router.get("/aluno", async (req, res) => {
+router.get("/aluno", verifyJWT(["read"]), async (req, res) => {
   try {
     const aluno = await getAlunos();
     res.json(aluno || { message: "No Aluno" });
@@ -80,7 +82,7 @@ router.get("/aluno", async (req, res) => {
 });
 
 // Responsáveis
-router.get("/responsavel", async (req, res) => {
+router.get("/responsavel", verifyJWT(["read"]), async (req, res) => {
   try {
     const responsavel = await getResponsaveis();
     res.json(responsavel || { message: "No Responsavel" });
@@ -91,7 +93,7 @@ router.get("/responsavel", async (req, res) => {
 });
 
 // Pagamentos
-router.get("/pagamento", async (req, res) => {
+router.get("/pagamento", verifyJWT(["read"]), async (req, res) => {
   try {
     const pagamento = await getPagamentos();
     res.json(pagamento || { message: "No Pagamento" });
@@ -102,7 +104,7 @@ router.get("/pagamento", async (req, res) => {
 });
 
 // Endereços
-router.get("/endereco", async (req, res) => {
+router.get("/endereco", verifyJWT(["read"]), async (req, res) => {
   try {
     const endereco = await getEnderecos();
     res.json(endereco || { message: "No Endereco" });
@@ -113,7 +115,7 @@ router.get("/endereco", async (req, res) => {
 });
 
 // Turmas
-router.get("/turmas", async (req, res) => {
+router.get("/turmas", verifyJWT(["read"]), async (req, res) => {
   try {
     const turmas = await getTurmas();
     res.json(turmas || { message: "No Turmas" });
@@ -122,7 +124,7 @@ router.get("/turmas", async (req, res) => {
     res.status(500).json({ error: "Query falha" });
   }
 });
-router.get("/filial", async (req, res) => {
+router.get("/filial", verifyJWT(["read"]), async (req, res) => {
   try {
     const filial = await getFiliais();
     res.json(filial || { message: "no filial" });
@@ -132,7 +134,7 @@ router.get("/filial", async (req, res) => {
   }
 });
 
-router.get("/aluno/total", async (req, res) => {
+router.get("/aluno/total", verifyJWT(["read"]), async (req, res) => {
   try {
     const total = await getNAlunos();
     res.json({
@@ -146,7 +148,7 @@ router.get("/aluno/total", async (req, res) => {
     });
   }
 });
-router.get("/funcionario/total", async (req, res) => {
+router.get("/funcionario/total", verifyJWT(["read"]), async (req, res) => {
   try {
     const total = await getNFuncionarios();
     res.json({
@@ -161,7 +163,7 @@ router.get("/funcionario/total", async (req, res) => {
   }
 });
 
-router.get("/aluno/inadimplente", async (req, res) => {
+router.get("/aluno/inadimplente", verifyJWT(["read"]), async (req, res) => {
   try {
     const inadimplente = await getInadimplente();
     res.json(inadimplente || { message: "No Inadimplentes" });
@@ -171,7 +173,7 @@ router.get("/aluno/inadimplente", async (req, res) => {
   }
 });
 
-router.get("/aluno/adimplente", async (req, res) => {
+router.get("/aluno/adimplente", verifyJWT(["read"]), async (req, res) => {
   try {
     const adimplente = await getAdimplente();
     res.json(adimplente || { message: "No adimplente" });
@@ -181,7 +183,7 @@ router.get("/aluno/adimplente", async (req, res) => {
   }
 });
 
-router.get("/aluno/inadimplente/total", async (req, res) => {
+router.get("/aluno/inadimplente/total", verifyJWT(["read"]), async (req, res) => {
   try {
     const inadimplenteCount = await getInadimplenteNum();
     res.json(inadimplenteCount || { message: "none" });
@@ -191,7 +193,7 @@ router.get("/aluno/inadimplente/total", async (req, res) => {
   }
 });
 
-router.post("/aluno/check", async (req, res) => {
+router.post("/aluno/check", verifyJWT(["read"]), async (req, res) => {
   const { field, value } = req.body;
 
   try {
@@ -202,7 +204,7 @@ router.post("/aluno/check", async (req, res) => {
     res.status(500).json({ error: "Falha na busca" });
   }
 });
-router.post("/funcionario/check", async (req, res) => {
+router.post("/funcionario/check", verifyJWT(["read"]), async (req, res) => {
   const { field, value } = req.body;
   try {
     const funcionario = await getFuncionarios(field, value);
@@ -211,7 +213,7 @@ router.post("/funcionario/check", async (req, res) => {
     console.error("error fetching funcionario: ", error);
   }
 });
-router.get("/funcionario", async (req, res) => {
+router.get("/funcionario", verifyJWT(["read"]), async (req, res) => {
   try {
     const funcionario = await getAllFuncionario();
     res.json(funcionario || { message: "Funcionario não encontrado" });
@@ -221,7 +223,7 @@ router.get("/funcionario", async (req, res) => {
   }
 });
 
-router.post("/insert", async (req, res) => {
+router.post("/insert", verifyJWT(["write"]), async (req, res) => {
   const { tableName, data } = req.body;
   let conn;
 
@@ -286,7 +288,7 @@ router.post("/insert", async (req, res) => {
     if (conn) conn.release();
   }
 });
-router.post("/funcionario/update", async (req, res) => {
+router.post("/funcionario/update", verifyJWT(["edit", "read"]), async (req, res) => {
   const { funcionario, endereco } = req.body;
   const c = await db.getConnection();
   try {
@@ -367,7 +369,7 @@ router.post("/funcionario/update", async (req, res) => {
     c.release();
   }
 });
-router.put("/aluno/update", async (req, res) => {
+router.put("/aluno/update", verifyJWT(["edit", "read"]), async (req, res) => {
   const { aluno, endereco, responsavel } = req.body;
 
   if (!aluno?.id || !endereco?.id) {
@@ -478,6 +480,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   "/funcionario/insertImage",
+  verifyJWT(["write"]),
   upload.single("foto"),
   async (req, res) => {
     try {
@@ -494,7 +497,7 @@ router.post(
   }
 );
 
-router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
+router.post("/aluno/insertimage", verifyJWT(["write"]), upload.single("foto"), async (req, res) => {
   try {
     const file = req.file;
     if (!file) {
@@ -510,6 +513,7 @@ router.post("/aluno/insertimage", upload.single("foto"), async (req, res) => {
 });
 router.post(
   "/aluno/insert/atestados",
+  verifyJWT(["write"]),
   upload.single("foto"),
   async (req, res) => {
     try {
@@ -527,7 +531,7 @@ router.post(
   }
 );
 
-router.get("/aluno/aniversariantes", async (req, res) => {
+router.get("/aluno/aniversariantes", verifyJWT(["read"]), async (req, res) => {
   try {
     const aniversariantes = await getAniversariantes();
     res.json(aniversariantes || { message: "Nenhum aniversariante" });
@@ -537,7 +541,7 @@ router.get("/aluno/aniversariantes", async (req, res) => {
   }
 });
 
-router.post("/turmas/update", async (req, res) => {
+router.post("/turmas/update", verifyJWT(["edit", "read"]), async (req, res) => {
   const { turma } = req.body;
   const c = await db.getConnection();
   try {
@@ -580,7 +584,7 @@ router.post("/turmas/update", async (req, res) => {
   }
 });
 
-router.post("/turmas/delete", async (req, res) => {
+router.post("/turmas/delete", verifyJWT(["delete"]), async (req, res) => {
   const { id, nome } = req.body;
   if (!id || !nome)
     return res.status(400).json({ error: "Dados incompletos." });

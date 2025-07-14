@@ -56,6 +56,14 @@ export default function DragView() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+
+      if (res.status === 403) {
+        alert(
+          `Você não tem permissão para acessar os dados de ${prop}. Entre em contato com o administrador.`
+        );
+        return [];
+      }
+
       if (!res.ok) throw new Error(`Erro ao buscar dados: ${res.status}`);
       const data = await res.json();
       return Array.isArray(data) ? data : [];

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import "./css/form.css";
 
-export default function InsertForm({ type, onClose, filial,rerun }) {
+export default function InsertForm({ type, onClose, filial, rerun }) {
   console.log(filial);
   const [endereco, setEndereco] = useState({
     cep: "",
@@ -24,6 +24,14 @@ export default function InsertForm({ type, onClose, filial,rerun }) {
           "Content-Type": "application/json",
         },
       });
+
+      if (response.status === 403) {
+        alert(
+          "Você não tem permissão para realizar a busca de CEP. Entre em contato com o administrador."
+        );
+        return;
+      }
+
       if (!response.ok) throw new Error("CEP não encontrado");
 
       const data = await response.json();
@@ -87,10 +95,19 @@ export default function InsertForm({ type, onClose, filial,rerun }) {
             }),
           }
         );
+
+        if (enderecoResponse.status === 403) {
+          alert(
+            "Você não tem permissão para cadastrar um endereço. Entre em contato com o administrador."
+          );
+          return;
+        }
+
         if (!enderecoResponse.ok) {
           const errorData = await enderecoResponse.json();
           setError(errorData.message || "Erro ao inserir endereço");
         }
+
         const enderecoData = await enderecoResponse.json();
 
         const filialResponse = await fetch(
@@ -103,10 +120,19 @@ export default function InsertForm({ type, onClose, filial,rerun }) {
             }),
           }
         );
+
+        if (filialResponse.status === 403) {
+          alert(
+            "Você não tem permissão para cadastrar uma filial. Entre em contato com o administrador."
+          );
+          return;
+        }
+
         if (!filialResponse.ok) {
           const errorData = await filialResponse.json();
           setError(errorData.message || "Erro ao inserir filial");
         }
+
         alert("Cadastro realizado com sucesso!");
         setFilial({
           nome: "",
@@ -118,7 +144,7 @@ export default function InsertForm({ type, onClose, filial,rerun }) {
           numero: "",
           rua: "",
         });
-        rerun()
+        rerun();
       } catch (error) {
         setError(error.message || "Erro ao cadastrar Filial");
       } finally {
@@ -331,7 +357,7 @@ export default function InsertForm({ type, onClose, filial,rerun }) {
           sala: "",
           id_filial: filial.id,
         });
-        rerun()
+        rerun();
       } catch (error) {
         setError(error.message || "Erro ao cadastrar Filial");
       } finally {

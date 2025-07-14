@@ -36,3 +36,8 @@
 .formSection.usuario label{
     color: white;
 }
+.permissions{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}

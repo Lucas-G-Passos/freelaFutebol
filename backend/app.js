@@ -28,7 +28,7 @@ app.use(express.json());
 //   next();
 // });
 
-app.use("/api", verifyJWT, router, routerPDF, routerImport, routerUser);
+app.use("/api", router, routerPDF, routerImport, routerUser);
 app.use("/auth", routerLogin);
 
 const PORT = 5000;

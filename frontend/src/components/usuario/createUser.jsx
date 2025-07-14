@@ -5,7 +5,18 @@ export default function CreateUsuario() {
   const [usuario, setUsuario] = useState({
     username: "",
     senha: "",
+    permissions: [], // Added permissions array
   });
+
+  const handlePermissionChange = (e) => {
+    const { value, checked } = e.target;
+    setUsuario((prev) => ({
+      ...prev,
+      permissions: checked
+        ? [...prev.permissions, value]
+        : prev.permissions.filter((perm) => perm !== value),
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +27,8 @@ export default function CreateUsuario() {
     }
 
     try {
+      const permissionsString = usuario.permissions.join(" ");
+
       const response = await fetch(
         `${import.meta.env.VITE_BACKENDURL}/api/usuario/insert`,
         {
@@ -24,7 +37,11 @@ export default function CreateUsuario() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(usuario),
+          body: JSON.stringify({
+            username: usuario.username,
+            senha: usuario.senha,
+            permissions: permissionsString,
+          }),
         }
       );
 
@@ -48,7 +65,8 @@ export default function CreateUsuario() {
       }
 
       alert(`Usuário ${data.username} inserido com sucesso!`);
-      setUsuario({ username: "", senha: "" });
+      setUsuario({ username: "", senha: "", permissions: [] });
+      window.location.reload();
     } catch (error) {
       console.error("Erro ao criar usuário:", error);
       alert("Erro de rede ou servidor indisponível.");
@@ -92,6 +110,50 @@ export default function CreateUsuario() {
               }
             />
           </div>
+
+          <div className="permissions">
+            <label>
+              <input
+                type="checkbox"
+                value="admin"
+                onChange={handlePermissionChange}
+              />
+              Admin
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="read"
+                onChange={handlePermissionChange}
+              />
+              Ler
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="write"
+                onChange={handlePermissionChange}
+              />
+              Escrever
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="edit"
+                onChange={handlePermissionChange}
+              />
+              Editar
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                value="delete"
+                onChange={handlePermissionChange}
+              />
+              Deletar
+            </label>
+          </div>
+
           <button type="submit">Criar novo usuário</button>
         </div>
       </form>

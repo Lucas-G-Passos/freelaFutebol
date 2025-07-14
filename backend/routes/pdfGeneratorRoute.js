@@ -1,6 +1,7 @@
 import express from "express";
 import createPDF from "./functions/pdfGen.js";
 import db from "./../db.js";
+import verifyJWT from "../JWT.js";
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ async function getPagbyId(id) {
   return rows[0];
 }
 
-router.post("/pdf", async (req, res) => {
+router.post("/pdf", verifyJWT("read"), async (req, res) => {
   try {
     const requiredFields = {
       aluno: {

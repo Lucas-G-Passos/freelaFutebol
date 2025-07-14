@@ -51,13 +51,16 @@ export default function ImportsExports() {
           }
         );
 
+        if (res.status === 403) {
+          alert("Você não tem permissão para acessar este recurso.");
+          return;
+        }
+
         const data = await res.json();
         if (!res.ok) setMessage(`Erro no upload, Erro:${data.error}`);
         else {
           setUploadedAluno(true);
           alert("Upload concluído");
-          // setResponse(data);
-          // setShow(true);
         }
       } catch (error) {
         setMessage("Erro ao enviar o arquivo: ", error);

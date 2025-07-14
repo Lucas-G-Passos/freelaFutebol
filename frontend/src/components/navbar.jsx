@@ -5,6 +5,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import React from "react";
 import CreateIcon from "@mui/icons-material/Create";
 import GridViewIcon from "@mui/icons-material/GridView";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Navbar() {
     <div style={{ display: "flex", height: "100vh" }}>
       <div id="navbar">
         <div id="top-button-cont">
-          <img src="/tigre.png" className="logo" />
+          <img src="/inter.jpg" className="logo" />
           <NavLink to={"/aluno"} className="navlink">
             <div className="navbutton">
               <PeopleIcon />
@@ -42,6 +43,12 @@ export default function Navbar() {
             <div className="navbutton">
               <GridViewIcon />
               View
+            </div>
+          </NavLink>
+          <NavLink to={"/usuario"} className={"navlink"}>
+            <div className="navbutton">
+              <PersonAddAltIcon />
+              Cadastrar Usu.
             </div>
           </NavLink>
           <a

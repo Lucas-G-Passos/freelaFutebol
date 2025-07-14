@@ -96,10 +96,14 @@ export default function TurmaDetail({
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Erro ao atualizar turma.");
+      if (response.status === 403) {
+        alert(
+          "Você não tem permissão para atualizar os dados da turma. Entre em contato com o administrador."
+        );
+        return;
       }
 
+      if (!response.ok) throw new Error("Erro ao atualizar turma.");
       const result = await response.json();
       console.log(result);
       window.location.reload();

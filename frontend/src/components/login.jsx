@@ -27,6 +27,7 @@ export default function Login() {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
         navigate("/aluno");
       } else {
         const data = await response.json();
@@ -42,7 +43,7 @@ export default function Login() {
     <div id="rootLogin">
       <div id="login-form">
         <form id="form" onSubmit={login}>
-          <img src="/tigre.png" className="loginImg"/>
+          <img src="/inter.jpg" className="loginImg" />
           <input
             type="text"
             name="username"

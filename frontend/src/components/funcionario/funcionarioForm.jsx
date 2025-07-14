@@ -103,6 +103,11 @@ export default function FuncionarioForm() {
         }
       );
 
+      if (response.status === 403) {
+        alert("Você não tem permissão para acessar este recurso.");
+        return;
+      }
+
       if (!response.ok) throw new Error(`Error! status: ${response.status}`);
       const data = await response.json();
       setFuncionario({ ...funcionario, foto: data.fotoUrl });

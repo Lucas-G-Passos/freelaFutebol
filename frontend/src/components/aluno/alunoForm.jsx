@@ -114,6 +114,13 @@ export default function AlunoForm() {
         }
       );
 
+      if (response.status === 403) {
+        alert(
+          "Você não tem permissão para realizar o upload da foto do aluno. Entre em contato com o administrador."
+        );
+        return;
+      }
+
       if (!response.ok) throw new Error(`Error! status: ${response.status}`);
       const data = await response.json();
       setAluno({ ...aluno, foto: data.fotoUrl });
@@ -150,6 +157,13 @@ export default function AlunoForm() {
           body: formData,
         }
       );
+
+      if (response.status === 403) {
+        alert(
+          "Você não tem permissão para realizar o upload do atestado médico. Entre em contato com o administrador."
+        );
+        return;
+      }
 
       if (!response.ok) throw new Error(`Error! status: ${response.status}`);
       const data = await response.json();

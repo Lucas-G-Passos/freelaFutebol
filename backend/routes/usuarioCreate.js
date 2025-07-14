@@ -1,15 +1,18 @@
 import bcrypt from "bcrypt";
 import express from "express";
 import db from "../db.js";
+import verifyJWT from "../JWT.js";
 
 const routerUser = express.Router();
 const saltRounds = 10;
 
-routerUser.post("/usuario/insert", async (req, res) => {
-  const { username, senha } = req.body;
+routerUser.post("/usuario/insert", verifyJWT(["write"]), async (req, res) => {
+  const { username, senha, permissions } = req.body;
 
   if (!username || !senha) {
-    return res.status(400).json({ message: "Username e senha são obrigatórios." });
+    return res
+      .status(400)
+      .json({ message: "Username e senha são obrigatórios." });
   }
 
   try {
@@ -24,10 +27,14 @@ routerUser.post("/usuario/insert", async (req, res) => {
 
     const hash = await bcrypt.hash(senha, saltRounds);
 
+    
+
     const [result] = await db.query(
-      "INSERT INTO users (username, password) VALUES (?, ?)",
-      [username, hash]
+      "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+      [username, hash, permissions]
     );
+
+
 
     res.status(201).json({ username, id: result.insertId });
   } catch (error) {

@@ -16,6 +16,13 @@ export default function DeleteCard({ turma, setDeleteCard, rerun }) {
         }
       );
 
+      if (res.status === 403) {
+        alert(
+          "Você não tem permissão para acessar este recurso. Por favor, entre em contato com o administrador do sistema."
+        );
+        return;
+      }
+
       if (!res.ok) throw new Error(`Erro ao deletar turma: ${res.status}`);
       const data = await res.json();
       window.location.reload();

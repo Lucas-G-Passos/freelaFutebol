@@ -35,7 +35,7 @@
   width: 100vw;
   min-height: 100vh;
   display: grid;
-  background: linear-gradient(
+  /* background: linear-gradient(
         90deg,
         var(--surface-a0) calc(50px - 2px),
         transparent 1%
@@ -43,7 +43,7 @@
       center / 50px 50px,
     linear-gradient(var(--surface-a0) calc(50px - 2px), transparent 1%) center /
       50px 50px,
-    var(--primary-a40);
+    var(--primary-a40);*/
     overflow: hidden;
 }
 
